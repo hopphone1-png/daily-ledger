@@ -1324,8 +1324,10 @@ function shell(){
   <div class="mask" id="lmask"><div class="dlg wide"><h3>Change log</h3><p style="margin:0 0 10px;color:#64748b">What was deleted or changed. Newest first.</p><div id="lgv-w"><table id="lgv-t"><thead><tr><th>Time</th><th>Who</th><th>Sheet</th><th>Row</th><th>Field</th><th>Action</th><th>Was → Now</th></tr></thead><tbody id="lgv-b"></tbody></table></div><div class="acts"><button class="btn" id="lgv-f">Show all changes</button><button class="btn go" id="lgv-x">Close</button></div></div></div>
   <div class="toast" id="toast"></div>`;
 }
+function fitCols(){const cg=$('#cg'),wrap=$('#wrap');if(!cg||!wrap||!COLS.length)return;const z=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tz'))||1,base=COLS.map(c=>Math.round(c.w*cws)),S=46+base.reduce((a,b)=>a+b,0),ex=Math.max(0,Math.floor((wrap.clientWidth/z-2-S)/COLS.length)),cols=cg.children;if(cols[0])cols[0].style.width='46px';base.forEach((w,i)=>{if(cols[i+1])cols[i+1].style.width=(w+ex)+'px'});cg.parentNode.style.width=(S+ex*COLS.length)+'px'}
+try{window.addEventListener('resize',()=>fitCols());new MutationObserver(()=>fitCols()).observe(document.documentElement,{attributes:true,attributeFilter:['style']})}catch(e){}
 function renderCards(){$('#cards').innerHTML=BANKS.map(([k,c,ci,nm])=>`<div class="ch bk" style="--c:${c}${ci?';--ci:'+ci:''}" title="Start: edit in Edit names"><span>${esc(nm)}</span><b id="b-${k}"></b><span id="n-${k}" hidden></span><span id="s-${k}" hidden></span></div>`).join('');
-  $('#cg').innerHTML='<col style="width:46px">'+COLS.map(c=>`<col style="width:${Math.round(c.w*cws)}px">`).join('');$('#cg').parentNode.style.width=(46+COLS.reduce((s,c)=>s+Math.round(c.w*cws),0))+'px';
+  $('#cg').innerHTML='<col style="width:46px">'+COLS.map(c=>`<col style="width:${Math.round(c.w*cws)}px">`).join('');fitCols();
   const bi=COLS.findIndex(c=>c.c),st=c=>c.c?`style="--c:${c.c}${c.ci?';--ci:'+c.ci:''}"`:'';
   $('#th').innerHTML='<tr class="hb"><th class="rh"></th>'+COLS.map((c,i)=>c.c?`<th class="bk" ${st(c)} id="hb-${esc(c.k)}"></th>`:`<th class="lbl">${i===bi-1?'Balance':''}</th>`).join('')+'</tr>'
    +'<tr class="hh"><th class="rh srt" data-k="" title="Clear sort">#</th>'+COLS.map(c=>`<th class="srt ${c.c?'bk':''}" ${st(c)}${c.num&&!c.c?' data-r="1"':''} data-k="${esc(c.k)}" title="Click to sort">${esc(c.t)}${c.c?`<em class="cn" id="hn-${esc(c.k)}"></em>`:''}<i class="sa" data-sa="${esc(c.k)}"></i></th>`).join('')+'</tr>'
@@ -1698,7 +1700,7 @@ $('#cs-t').addEventListener('click',e=>{const th=e.target.closest('[data-cs]');i
  const setTz=v=>{tz=Math.round(Math.min(1.6,Math.max(.8,v))*10)/10;document.documentElement.style.setProperty('--tz',tz);$('#fs-v').textContent=Math.round(tz*100)+'%';try{localStorage.setItem('ledger-tz2',tz)}catch(e){}};
  setTz(tz);$('#fs-m').onclick=()=>setTz(tz-.1);$('#fs-p').onclick=()=>setTz(tz+.1);$('#fs-v').onclick=()=>setTz(.8)}
 {const th=$('#th'),edge=(e)=>{const t=e.target.closest('tr.hh th');if(!t||t.classList.contains('rh'))return null;const r=t.getBoundingClientRect();return e.clientX>=r.right-7?t:null};
- const apply=()=>{const cols=$('#cg').children;COLS.forEach((c,i)=>{if(cols[i+1])cols[i+1].style.width=Math.round(c.w*cws)+'px'});$('#cg').parentNode.style.width=(46+COLS.reduce((s,c)=>s+Math.round(c.w*cws),0))+'px'};
+ const apply=()=>fitCols();
  let rz=null,moved=false;
  th.addEventListener('mousemove',e=>{if(rz)return;const t=e.target.closest('tr.hh th');th.querySelectorAll('tr.hh th').forEach(x=>{x.style.cursor='';x.style.boxShadow=''});if(edge(e)){t.style.cursor='col-resize'}});
  th.addEventListener('mousedown',e=>{const t=edge(e);if(!t)return;e.preventDefault();e.stopPropagation();const w=t.getBoundingClientRect().width/(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tz'))||1);rz={x:e.clientX,s:cws,w};moved=false;document.body.style.cursor='col-resize'},true);
