@@ -14,6 +14,12 @@
    LAYOUT: navy hero with cards, floating toolbar, full-height sheet */
 :root{color-scheme:light;--bg:light-dark(#eef1f6,#0a0d14);--pan:light-dark(#fff,#141924);--ink:light-dark(#121826,#e8ecf3);--mut:light-dark(#6b7385,#8f99ab);--line:light-dark(#eaedf2,#222938);--line2:light-dark(#d5dae3,#2e3647);--acc:#3d6bff;--hd:light-dark(#f6f8fb,#191f2c);--mix:15%;--navy:#0b1433}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+.pc{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:999px;font-size:10px;font-weight:800;background:#e0f2fe;color:#0369a1;vertical-align:1px;line-height:15px}.pc.go{background:#f59e0b;color:#fff;cursor:pointer;box-shadow:0 0 0 2px #f59e0b44}.pc.ok{background:#16a34a;color:#fff;cursor:pointer}
+
+html body #app .hero .top{flex-wrap:wrap!important;row-gap:8px!important}
+html body #app .hero .top>*{flex:none!important}html body #app .hero .top .btn,html body #app .hero .top .st{white-space:nowrap!important}
+html body #app .hero .top #date{min-width:148px!important;width:148px!important}
+@media(max-width:1500px){html body #app .hero .top{gap:6px!important}html body #app .hero .top .btn{padding-left:10px!important;padding-right:10px!important}html body #app .hero .top .sp{flex:1 1 0!important;min-width:0!important}html body #app .hero .top #save kbd{display:none!important}}
 *{box-sizing:border-box;min-width:0}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Plus Jakarta Sans","Noto Sans SC",system-ui,sans-serif;font-variant-numeric:tabular-nums;overflow-x:hidden}
@@ -287,7 +293,7 @@ html body .m2 .m2-card h3{color:#0c4a6e!important;text-shadow:0 1px 0 #fff}
 html body .m2 .m2-card h3 small,html body .m2 .m2-k span,html body .m2 .m2-g small,html body .m2 .m2-det summary::after{color:#64748b!important}
 html body .m2 .m2-k b,html body .m2 .m2-g b,html body .m2 .m2-det summary{color:#0f172a}
 html body .m2 .pos{color:#15803d!important}html body .m2 .neg{color:#dc2626!important}
-html body .m2 .m2-hero{background:linear-gradient(135deg,#38bdf8 0%,#0ea5e9 45%,#0369a1 100%)!important;border:0!important;box-shadow:0 18px 36px -18px #0369a1cc,inset 0 1px 0 #ffffff55!important;color:#fff}
+html body .m2 .m2-hero{background:linear-gradient(135deg,#0284c7 0%,#0369a1 50%,#0c4a6e 100%)!important;border:0!important;box-shadow:0 18px 36px -18px #0369a1cc,inset 0 1px 0 #ffffff55!important;color:#fff}
 html body .m2 .m2-hl span{color:#e0f2fe!important;text-shadow:0 1px 2px #0c4a6e55}
 html body .m2 .m2-hl em{color:#f0f9ff!important}
 html body .m2 .m2-hl b,html body .m2 .m2-hl b.pos,html body .m2 .m2-hl b.neg{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:#fff!important;text-shadow:0 2px 0 #0c4a6e44,0 6px 18px #0c4a6e66}
@@ -916,7 +922,7 @@ html body #app thead tr.hb th.bk{background:#3e566e!important;color:#fff!importa
 html body #app thead tr.hh th.bk{background:color-mix(in oklab,var(--c) 30%,#34495e)!important;color:#fff!important}
 /* THEME3b match mockup */
 html body{background:#eef6fd!important}
-html body #app .hero{background:linear-gradient(135deg,#38bdf8,#0369a1)!important}
+html body #app .hero{background:linear-gradient(135deg,#0284c7,#0c4a6e)!important}
 html body #app .top .btn,html body #app .dnav .btn,html body #app .top .fld,html body #app .fsz,html body #app .bar .btn,html body #app #q{border-radius:999px!important}
 html body #app #save{background:#fff!important;border-color:#fff!important;color:#0369a1!important}
 html body #app #save kbd{background:#e0f2fe!important;color:#0369a1!important}
@@ -1022,7 +1028,7 @@ body[data-role=cs] #logb{display:none!important}
 #lgv-t .lgt{display:inline-block;font-size:11px;font-weight:800;padding:1px 8px;border-radius:99px;background:#e0f2fe;color:#075985}
 #lgv-t td.empty{text-align:center;color:#64748b;padding:22px}
 /* CS DATA sky theme */
-html body .csv2{background:linear-gradient(135deg,#38bdf8,#0369a1) top/100% 150px no-repeat,#eef6fd!important;color:#0f172a!important}
+html body .csv2{background:linear-gradient(135deg,#0284c7,#0c4a6e) top/100% 150px no-repeat,#eef6fd!important;color:#0f172a!important}
 html body .csv2 .cs-top h2{color:#fff!important;text-shadow:0 2px 6px #0a3a5c80}
 html body .csv2 .cs-top p{color:#e0f2fe!important;text-shadow:0 1px 3px #0a3a5c66}
 html body .csv2 .cs-s{background:#ffffff2b!important;border:1px solid #ffffff70!important;color:#fff!important;box-shadow:0 2px 6px -1px #0a3a5c55!important}
@@ -1324,7 +1330,7 @@ function shell(){
   <div class="mask" id="lmask"><div class="dlg wide"><h3>Change log</h3><p style="margin:0 0 10px;color:#64748b">What was deleted or changed. Newest first.</p><div id="lgv-w"><table id="lgv-t"><thead><tr><th>Time</th><th>Who</th><th>Sheet</th><th>Row</th><th>Field</th><th>Action</th><th>Was → Now</th></tr></thead><tbody id="lgv-b"></tbody></table></div><div class="acts"><button class="btn" id="lgv-f">Show all changes</button><button class="btn go" id="lgv-x">Close</button></div></div></div>
   <div class="toast" id="toast"></div>`;
 }
-function fitCols(){const cg=$('#cg'),wrap=$('#wrap');if(!cg||!wrap||!COLS.length)return;const z=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tz'))||1,base=COLS.map(c=>Math.round(c.w*cws)),S=46+base.reduce((a,b)=>a+b,0),ex=cws<.99?0:Math.max(0,Math.floor((wrap.clientWidth/z-2-S)/COLS.length)),cols=cg.children;if(cols[0])cols[0].style.width='46px';base.forEach((w,i)=>{if(cols[i+1])cols[i+1].style.width=(w+ex)+'px'});cg.parentNode.style.width=(S+ex*COLS.length)+'px'}
+function fitCols(){const cg=$('#cg'),wrap=$('#wrap');if(!cg||!wrap||!COLS.length)return;const z=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tz'))||1,base=COLS.map(c=>Math.round(c.w*cws)),S=46+base.reduce((a,b)=>a+b,0),ex=Math.max(0,Math.floor((wrap.clientWidth/z-2-S)/COLS.length)),cols=cg.children;if(cols[0])cols[0].style.width='46px';base.forEach((w,i)=>{if(cols[i+1])cols[i+1].style.width=(w+ex)+'px'});cg.parentNode.style.width=(S+ex*COLS.length)+'px'}
 try{window.addEventListener('resize',()=>fitCols());new MutationObserver(()=>fitCols()).observe(document.documentElement,{attributes:true,attributeFilter:['style']})}catch(e){}
 function renderCards(){$('#cards').innerHTML=BANKS.map(([k,c,ci,nm])=>`<div class="ch bk" style="--c:${c}${ci?';--ci:'+ci:''}" title="Start: edit in Edit names"><span>${esc(nm)}</span><b id="b-${k}"></b><span id="n-${k}" hidden></span><span id="s-${k}" hidden></span></div>`).join('');
   $('#cg').innerHTML='<col style="width:46px">'+COLS.map(c=>`<col style="width:${Math.round(c.w*cws)}px">`).join('');fitCols();
@@ -1353,14 +1359,26 @@ setInterval(()=>{try{tngLimits()}catch(e){}},60000);
 function cd(v){return String(v??'').trim().replace(/^a(?=\d)/i,'')}
 function renderTng(){$('#tng').innerHTML=S.tng.map((t,i)=>`<div class="tw"><button class="x" data-tx="${i}" aria-label="Remove ${esc(t.n)}">×</button><span class="av" style="--h:${hue(t.n||'?')}">${esc((t.n||'?').slice(0,1).toUpperCase())}</span><div class="c1"><span class="tp tgp"><i>TNG</i><input class="tn" data-tn="${i}"${document.body.dataset.role==="cs"?" readonly tabindex=-1":""} value="${esc(t.n)}" placeholder="Name" aria-label="TNG name"></span><input class="tv" data-tv="${i}"${document.body.dataset.role==="cs"?" readonly tabindex=-1":""} value="${money(Number(t.v)||0)}" inputmode="decimal" aria-label="TNG amount"></div><div class="c2"><span>Limit</span><div class="lim" id="tl-${i}"></div></div></div>`).join('')+`<button class="tw add" id="tadd" title="Add TNG" aria-label="Add TNG">+</button>`;tngTot();tngLimits()}
 function tngTot(){const e=$('#t-all');if(e)e.textContent=money(S.tng.reduce((a,t)=>a+(Number(t.v)||0),0))}
+let PM=new Map();
+function promoCfg(){const p=S.promo||{};return{amt:Number(p.amt)||30,n:Number(p.n)||3,bonus:Number(p.bonus)||18}}
+function promoMap(){const m=new Map(),cfg=promoCfg(),cnt={},all=Object.assign({},S.days);if(S.date)all[S.date]={rows:S.rows};
+  Object.keys(all).sort().forEach(k=>(all[k].rows||[]).forEach(r=>{if(!r||r.type===NS)return;const code=String(r.code||'').trim();if(!code||/^0+$/.test(code))return;
+    const dep=BANKS.reduce((s,[b])=>s+(typeof r[b]==='number'&&r[b]>0?r[b]:0),0);if(dep<cfg.amt-.001)return;
+    const c=(cnt[code]=(cnt[code]||0)+1);m.set(r,{c,n:cfg.n,full:c===cfg.n,bonus:cfg.bonus});if(c>=cfg.n)cnt[code]=0}));return m}
+function promoChip(row){const p=PM.get(row);if(!p)return '';
+  if(p.full)return row.pd?`<span class="pc ok" title="Bonus ${p.bonus} sent - click to undo">✓ ${p.bonus}</span>`:`<span class="pc go" title="Reached ${p.n}/${p.n} - click when bonus ${p.bonus} is sent">Send ${p.bonus}</span>`;
+  return `<span class="pc" title="Package progress">${p.c}/${p.n}</span>`}
+(()=>{const w=document;w.addEventListener('mousedown',e=>{const el=e.target.closest&&e.target.closest('.pc.go,.pc.ok');if(!el)return;if(window.innerWidth<=700)return;e.preventDefault();e.stopPropagation();
+  const td=el.closest('td'),tr=td.parentNode,vi=[...tr.parentNode.children].indexOf(tr),row=S.rows[vis[vi]];if(!row)return;snap();if(row.pd)delete row.pd;else row.pd=1;touch();render()},true)})();
 function cellHTML(row,c,vi,ci){const col=COLS[c],v=row[col.k];let inner=esc(fmt(v)),cls=[];
   if(col.c)cls.push('bk');if(col.num){cls.push('n');if(v!==''&&v!=null&&typeof v!=='number')cls.push('bad');else if(typeof v==='number')cls.push(v<0?'neg':'pos')}if(col.k==='transfer'||col.k==='bonus')cls.push('xt');if(col.k==='type'&&v)cls.push('gm');if(col.k==='remark'&&tngIn(v))cls.push('tn');
   if(col.k==='code'&&v)inner=esc(cd(v));
   if(col.k==='bonus'&&typeof v==='number')inner=esc(fmt(v))+'%';
   if(col.k==='remark'&&v){const t=tngIn(v);if(t){const rest=String(v).replace(new RegExp('\\b('+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'|tng)\\b','gi'),'').trim();inner=`<span class="tp"><i>TNG</i>${esc(t.toUpperCase())}</span>${rest?' <small class="tr">'+esc(rest)+'</small>':''}`}}
+  if(col.k==='remark'){inner+=promoChip(row)}
   if(col.sel){inner=v===NS?'<span class="nsp">Not sale</span>':v?esc(v):'';inner+=`<svg class="dd" data-dd viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`}
   return `<td class="${cls.join(' ')}" ${col.c?`style="--c:${col.c}"`:''} data-v="${vi}" data-c="${c}">${inner}</td>`}
-function render(){ensure();const ql=q.toLowerCase();
+function render(){ensure();PM=promoMap();const ql=q.toLowerCase();
   vis=S.rows.map((r,i)=>i).filter(i=>!onlyNS||S.rows[i].type===NS).filter(i=>!ql||COLS.some(c=>String(S.rows[i][c.k]??'').toLowerCase().includes(ql)));
   if(sortK&&sortD){const full=vis.filter(i=>!blank(S.rows[i])),emp=vis.filter(i=>blank(S.rows[i]));const has=v=>v!==''&&v!=null;
     full.sort((a,b)=>{const x=S.rows[a][sortK],y=S.rows[b][sortK];if(!has(x)&&!has(y))return a-b;if(!has(x))return 1;if(!has(y))return -1;
@@ -1368,7 +1386,8 @@ function render(){ensure();const ql=q.toLowerCase();
   document.querySelectorAll('[data-sa]').forEach(e=>{e.textContent=e.dataset.sa===sortK&&sortD?(sortD>0?' ▲':' ▼'):''});
   $('#tb').innerHTML=vis.map((ri,vi)=>`<tr class="${S.rows[ri].type===NS?'ns':''}"><td class="rh" data-row="${vi}">${ri+1}</td>${COLS.map((c,ci)=>cellHTML(S.rows[ri],ci,vi)).join('')}</tr>`).join('');
   act.r=Math.min(act.r,vis.length-1);anc.r=Math.min(anc.r,vis.length-1);paint();summary()}
-function redraw(vi,c){const td=cell(vi,c);if(td)td.outerHTML=cellHTML(S.rows[vis[vi]],c,vi)}
+function redraw(vi,c){const old=PM;PM=promoMap();const td=cell(vi,c);if(td)td.outerHTML=cellHTML(S.rows[vis[vi]],c,vi);
+  const rc=COLS.findIndex(x=>x.k==='remark'),sig=(m,r)=>{const x=m.get(r);return x?x.c+(r.pd?'d':''):''};if(rc>=0)vis.forEach((ri,i)=>{const r=S.rows[ri];if(sig(old,r)===sig(PM,r)||i===vi&&c===rc)return;const tc=cell(i,rc);if(tc&&!tc.querySelector('input'))tc.outerHTML=cellHTML(r,rc,i)})}
 const cell=(vi,c)=>$('#tb').rows[vi]?.cells[c+1];
 function rng(){return{r1:Math.min(act.r,anc.r),r2:Math.max(act.r,anc.r),c1:Math.min(act.c,anc.c),c2:Math.max(act.c,anc.c)}}
 function paint(){document.querySelectorAll('#tb .in,#tb .act,#tb tr.hit').forEach(e=>e.classList.remove('in','act','hit'));const g=rng(),tb=$('#tb');
@@ -1402,14 +1421,14 @@ function setv(vi,c,raw){const row=S.rows[vis[vi]],col=COLS[c];let v=parse(col,ra
   if(col.k==='remark'){const hit=tngIn(v);if(hit)row.tng=hit;else if(row.tng)delete row.tng}S.sample=false}
 
 function stash(){if(!S.date)return;let n=S.rows.length;while(n&&blank(S.rows[n-1]))n--;const rows=S.rows.slice(0,n);
-  const keep=S.days[S.date]?.keep;if(!n&&!keep&&!S.adds.length){delete S.days[S.date];return}S.days[S.date]={rows,open:S.open,games:S.games,adds:S.adds,...(keep?{keep:true}:{})}}
+  const keep=S.days[S.date]?.keep||S.date===S.kd;if(!n&&!keep&&!S.adds.length){delete S.days[S.date];return}S.days[S.date]={rows,open:S.open,games:S.games,adds:S.adds,...(keep?{keep:true}:{})}}
 function closeOf(d){const o={};BANKS.forEach(([k])=>o[k]=Math.round(((Number(d.open?.[k])||0)+(d.rows||[]).reduce((a,r)=>a+(typeof r[k]==='number'?r[k]:0),0))*100)/100);return o}
 function switchDay(nd){if(!nd||nd===S.date){$('#date').value=S.date||'';return}closeEd();stash();
   let d=S.days[nd],fresh=!d;
   if(!d){const keys=Object.keys(S.days).sort(),prev=keys.filter(x=>x<nd).pop(),p=S.days[prev]||S.days[keys.find(x=>x>nd)]||{rows:[],open:{},games:{}};
     const g={};S.types.forEach(k=>{if((p.games||{})[k]?.open!=null||gSum(p.rows,k))g[k]={open:prev?gBal(p,k):(p.games||{})[k]?.open}});
     d={rows:[],open:prev?closeOf(p):{...p.open},games:g}}
-  S.date=nd;S.adds=JSON.parse(JSON.stringify(d.adds||[]));S.rows=JSON.parse(JSON.stringify(d.rows||[]));S.open={...d.open};S.games=JSON.parse(JSON.stringify(d.games||{}));
+  S.date=nd;S.kd=nd;S.adds=JSON.parse(JSON.stringify(d.adds||[]));S.rows=JSON.parse(JSON.stringify(d.rows||[]));S.open={...d.open};S.games=JSON.parse(JSON.stringify(d.games||{}));
   undo=[];redo=[];act={r:0,c:0};anc={r:0,c:0};gk='';q='';$('#q').value='';touch();render();
   toast(fresh?'New sheet for '+nd+' · start = last closing':'Opened '+nd)}
 let pk=null;
@@ -1500,6 +1519,8 @@ document.addEventListener('keydown',e=>{
   const k=e.key,mod=e.ctrlKey||e.metaKey;
   if(mod&&k.toLowerCase()==='s'){e.preventDefault();save();return}
   {const om=document.querySelector('.mask.on');if(om){if(k==='Escape'){e.preventDefault();om.classList.remove('on')}return}}
+   if(k==='Escape'&&!pk&&!ed){const mv=$('#mview');if(mv&&!mv.hidden){e.preventDefault();$('#mv-x').click();return}if(csOn){e.preventDefault();closeCS();return}}
+   if(k==='Escape'&&!pk&&!ed&&!/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||'')){e.preventDefault();const nw=Date.now();if(window.__escT&&nw-window.__escT<2500){window.__escT=0;const lb=$('#lgo');if(lb)lb.click()}else{window.__escT=nw;toast('Press Esc again to sign out')}return}
   if(pk){e.preventDefault();const n=pk.list.length+1;if(k==='ArrowDown'){pk.idx=(pk.idx+1)%n;drawPick()}else if(k==='ArrowUp'){pk.idx=(pk.idx-1+n)%n;drawPick()}
     else if(k==='Enter'||k==='Tab')donePick(pk.list[pk.idx]??'');else if(k==='Escape')donePick();
     else if(k.length===1){const i=pk.list.findIndex(x=>x.toLowerCase().startsWith(k.toLowerCase()));if(i>=0){pk.idx=i;drawPick()}}return}
