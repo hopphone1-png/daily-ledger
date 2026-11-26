@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Daily Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@
    LAYOUT: navy hero with cards, floating toolbar, full-height sheet */
 :root{color-scheme:light;--bg:light-dark(#eef1f6,#0a0d14);--pan:light-dark(#fff,#141924);--ink:light-dark(#121826,#e8ecf3);--mut:light-dark(#6b7385,#8f99ab);--line:light-dark(#eaedf2,#222938);--line2:light-dark(#d5dae3,#2e3647);--acc:#3d6bff;--hd:light-dark(#f6f8fb,#191f2c);--mix:15%;--navy:#0b1433}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+html{touch-action:pan-x pan-y}html body #app #wrap{touch-action:pan-x pan-y}
 @media(max-width:700px){html[data-role=admin] body #app .fsz{display:inline-flex!important}}
 .pc{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:999px;font-size:10px;font-weight:800;background:#e0f2fe;color:#0369a1;vertical-align:1px;line-height:15px}.pc.go{background:#f59e0b;color:#fff;cursor:pointer;box-shadow:0 0 0 2px #f59e0b44}.pc.ok{background:#16a34a;color:#fff;cursor:pointer}
 
@@ -1218,7 +1219,7 @@ let BANKS=[],COLS=[],NUMK=[];
 function buildCols(){BANKS=S.banks.map(b=>[b.id,b.c,inkOf(b.c),b.name]);
   COLS=[{k:'remark',t:'Remark',w:112},{k:'time',t:'Time',w:72},{k:'code',t:'Code',w:96},{k:'type',t:'Game',w:132,sel:1},...BANKS.map(([k,c,ci,nm])=>({k,t:nm,w:96,num:1,c,ci})),{k:'transfer',t:'Transfer',w:94,num:1},{k:'bonus',t:'(%) Bonus',w:94,num:1}];
   NUMK=COLS.filter(c=>c.num).map(c=>c.k)}
-const SRC={css:document.querySelector('style').textContent,head:'\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>Daily Ledger</title>\n<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">\n',main:$('#main').textContent};
+const SRC={css:document.querySelector('style').textContent,head:'\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">\n<title>Daily Ledger</title>\n<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">\n',main:$('#main').textContent};
 let S=JSON.parse($('#state').textContent),dirty=false,art=null,dl=null;
 try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.editedAt>(S.savedAt||0)){S=d;dirty=true}}catch(e){}
 S.rows=S.rows||[];S.tng=S.tng||[];S.types=S.types||[];S.open=S.open||{};S.games=S.games||{};
@@ -1719,8 +1720,14 @@ $('#cs-q').addEventListener('input',renderCS);
 $('#cs-t').addEventListener('click',e=>{const th=e.target.closest('[data-cs]');if(th){const k=th.dataset.cs;csSort=csSort.k===k?{k,d:-csSort.d}:{k,d:k==='a'?1:-1};renderCS();return}
   const b=e.target.closest('.cs-d');if(b){closeCS();switchDay(b.dataset.day)}});
 {document.documentElement.dataset.role=window.__ROLE||'';let tz=1;try{tz=Number(localStorage.getItem('ledger-tz2'))||.8}catch(e){}
- const setTz=v=>{tz=Math.round(Math.min(1.6,Math.max(.5,v))*10)/10;document.documentElement.style.setProperty('--tz',tz);$('#fs-v').textContent=Math.round(tz*100)+'%';try{localStorage.setItem('ledger-tz2',tz)}catch(e){}};
- setTz(tz);$('#fs-m').onclick=()=>setTz(tz-.1);$('#fs-p').onclick=()=>setTz(tz+.1);$('#fs-v').onclick=()=>setTz(.8)}
+ const setTz=v=>{tz=Math.round(Math.min(1.6,Math.max(.5,v))*100)/100;document.documentElement.style.setProperty('--tz',tz);$('#fs-v').textContent=Math.round(tz*100)+'%';try{localStorage.setItem('ledger-tz2',tz)}catch(e){}};
+ setTz(tz);$('#fs-m').onclick=()=>setTz(tz-.1);$('#fs-p').onclick=()=>setTz(tz+.1);$('#fs-v').onclick=()=>setTz(.8);window.__setTz=setTz;window.__getTz=()=>tz}
+(()=>{let d0=0,z0=1,on=false;const dist=e=>Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+ const inW=e=>e.target.closest&&e.target.closest('#wrap');
+ document.addEventListener('touchstart',e=>{if(document.documentElement.dataset.role!=='admin'||e.touches.length!==2||!inW(e)){on=false;return}on=true;d0=dist(e)||1;z0=window.__getTz()},{passive:true});
+ document.addEventListener('touchmove',e=>{if(!on||e.touches.length!==2)return;e.preventDefault();window.__setTz(z0*dist(e)/d0)},{passive:false});
+ document.addEventListener('touchend',e=>{if(e.touches.length<2)on=false},{passive:true});
+ document.addEventListener('wheel',e=>{if(!e.ctrlKey||document.documentElement.dataset.role!=='admin'||!inW(e))return;e.preventDefault();window.__setTz(window.__getTz()*Math.exp(-e.deltaY*.01))},{passive:false})})();
 {const th=$('#th'),edge=(e)=>{const t=e.target.closest('tr.hh th');if(!t||t.classList.contains('rh'))return null;const r=t.getBoundingClientRect();return e.clientX>=r.right-7?t:null};
  const apply=()=>fitCols();
  let rz=null,moved=false;
