@@ -14,6 +14,7 @@
    LAYOUT: navy hero with cards, floating toolbar, full-height sheet */
 :root{color-scheme:light;--bg:light-dark(#eef1f6,#0a0d14);--pan:light-dark(#fff,#141924);--ink:light-dark(#121826,#e8ecf3);--mut:light-dark(#6b7385,#8f99ab);--line:light-dark(#eaedf2,#222938);--line2:light-dark(#d5dae3,#2e3647);--acc:#3d6bff;--hd:light-dark(#f6f8fb,#191f2c);--mix:15%;--navy:#0b1433}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+@media(max-width:700px){html[data-role=admin] body #app .fsz{display:inline-flex!important}}
 .pc{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:999px;font-size:10px;font-weight:800;background:#e0f2fe;color:#0369a1;vertical-align:1px;line-height:15px}.pc.go{background:#f59e0b;color:#fff;cursor:pointer;box-shadow:0 0 0 2px #f59e0b44}.pc.ok{background:#16a34a;color:#fff;cursor:pointer}
 
 html body #app .hero .top{flex-wrap:wrap!important;row-gap:8px!important}
@@ -1717,8 +1718,8 @@ function closeCS(){if(!csOn)return;csOn=false;$('#csv2').hidden=true;renderTabs(
 $('#cs-q').addEventListener('input',renderCS);
 $('#cs-t').addEventListener('click',e=>{const th=e.target.closest('[data-cs]');if(th){const k=th.dataset.cs;csSort=csSort.k===k?{k,d:-csSort.d}:{k,d:k==='a'?1:-1};renderCS();return}
   const b=e.target.closest('.cs-d');if(b){closeCS();switchDay(b.dataset.day)}});
-{let tz=1;try{tz=Number(localStorage.getItem('ledger-tz2'))||.8}catch(e){}
- const setTz=v=>{tz=Math.round(Math.min(1.6,Math.max(.8,v))*10)/10;document.documentElement.style.setProperty('--tz',tz);$('#fs-v').textContent=Math.round(tz*100)+'%';try{localStorage.setItem('ledger-tz2',tz)}catch(e){}};
+{document.documentElement.dataset.role=window.__ROLE||'';let tz=1;try{tz=Number(localStorage.getItem('ledger-tz2'))||.8}catch(e){}
+ const setTz=v=>{tz=Math.round(Math.min(1.6,Math.max(.5,v))*10)/10;document.documentElement.style.setProperty('--tz',tz);$('#fs-v').textContent=Math.round(tz*100)+'%';try{localStorage.setItem('ledger-tz2',tz)}catch(e){}};
  setTz(tz);$('#fs-m').onclick=()=>setTz(tz-.1);$('#fs-p').onclick=()=>setTz(tz+.1);$('#fs-v').onclick=()=>setTz(.8)}
 {const th=$('#th'),edge=(e)=>{const t=e.target.closest('tr.hh th');if(!t||t.classList.contains('rh'))return null;const r=t.getBoundingClientRect();return e.clientX>=r.right-7?t:null};
  const apply=()=>fitCols();
