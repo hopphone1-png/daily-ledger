@@ -1506,7 +1506,8 @@ function summary(){let all=0,allOpen=0;const sum={},n={};NUMK.forEach(k=>{sum[k]
   {const L=[...new Set([...Object.keys(S.days).filter(k=>(S.days[k].rows.length||S.days[k].keep||(S.days[k].adds||[]).length)),S.date])].sort();$('#dprev').classList.toggle('off',!L.some(x=>x<S.date));$('#dnext').classList.toggle('off',!L.some(x=>x>S.date))}
   const nD=new Set([...Object.keys(S.days).filter(k=>(S.days[k].rows.length||S.days[k].keep||(S.days[k].adds||[]).length)),...(used?[S.date]:[])]).size;renderTabs();
   $('#smp').textContent=(nD?'· '+nD+(nD>1?' days':' day')+' with records ':'')+(S.sample?'· Sample data from your screenshot, type over it':'');$('#date').value=S.date||''}
-function go(r,c,ext){if(r>=vis.length){S.rows.push({});render()}act={r:Math.max(0,Math.min(r,vis.length-1)),c:Math.max(0,Math.min(c,COLS.length-1))};if(!ext)anc={...act};paint();cell(act.r,act.c)?.scrollIntoView({block:'nearest',inline:'nearest'})}
+function go(r,c,ext){if(r>=vis.length){S.rows.push({});render()}act={r:Math.max(0,Math.min(r,vis.length-1)),c:Math.max(0,Math.min(c,COLS.length-1))};if(!ext)anc={...act};paint();reveal(cell(act.r,act.c))}
+function reveal(td){if(!td)return;const w=document.getElementById('wrap');if(!w||(w.scrollHeight<=w.clientHeight+1&&w.scrollWidth<=w.clientWidth+1)){td.scrollIntoView({block:'nearest',inline:'nearest'});return}const th=w.querySelector('thead'),hh=th?th.getBoundingClientRect().height:0,fc=w.querySelector('tbody td:first-child'),lw=fc?fc.getBoundingClientRect().width:0,wr=w.getBoundingClientRect(),tr=td.getBoundingClientRect(),sb=w.offsetHeight-w.clientHeight,sr=w.offsetWidth-w.clientWidth,top=wr.top+hh+6,bot=wr.bottom-sb-6,left=wr.left+lw+6,right=wr.right-sr-6;if(tr.top<top)w.scrollTop-=top-tr.top;else if(tr.bottom>bot)w.scrollTop+=tr.bottom-bot;if(tr.left<left)w.scrollLeft-=left-tr.left;else if(tr.right>right)w.scrollLeft+=tr.right-right}
 const tngIn=txt=>{const w=String(txt||'').toLowerCase().split(/[^a-z0-9\u4e00-\u9fff]+/).filter(Boolean);if(!w.includes('tng'))return null;const t=S.tng.find(t=>t.n&&w.includes(t.n.toLowerCase()));return t?t.n:null};
 const fmtT=x=>{const s=String(x??'').trim(),m=s.match(/^(\d{1,2})[.:]?(\d{2})$/);if(!m||+m[1]>23||+m[2]>59)return s;return m[1].padStart(2,'0')+'.'+m[2]};
 const NS='NOT SALE';
@@ -2604,6 +2605,15 @@ html body #app .tot.kpi.kpi.kpi{grid-template-columns:repeat(6,minmax(0,1fr))!im
 html body #app .tot.kpi.kpi.kpi .kg>div:has(#w-net),html body #app .tot.kpi.kpi.kpi .kg>div:has(#w-dep),html body #app .tot.kpi.kpi.kpi .kg>div:has(#w-wd){grid-column:span 2!important;width:auto!important;min-width:0!important}
 html body #app .tot.kpi.kpi.kpi .kg>div:has(#uc-all),html body #app .tot.kpi.kpi.kpi .kg>div:has(#w-pl){grid-column:span 3!important;width:auto!important;min-width:0!important}
 html body #app .tot.kpi.kpi.kpi .kg>div:has(#w-net),html body #app .tot.kpi.kpi.kpi .kg>div:has(#w-dep),html body #app .tot.kpi.kpi.kpi .kg>div:has(#w-wd),html body #app .tot.kpi.kpi.kpi .kg>div:has(#uc-all),html body #app .tot.kpi.kpi.kpi .kg>div:has(#w-pl){display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;padding:5px 10px 6px!important}
+}</style>
+<style id="lock-desktop">@media(min-width:701px){
+html,body{height:100%;overflow:hidden!important}
+html body #app{height:100vh!important;height:100dvh!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+html body #app>.hero{flex:none!important;position:relative!important;z-index:30}
+html body #app>.main{flex:1 1 auto!important;min-height:0!important;display:flex!important;flex-direction:column!important}
+html body #app>.main>.bar{flex:none!important}
+html body #app>.main>#wrap{flex:1 1 auto!important;min-height:0!important;height:auto!important;max-height:none!important}
+html body #app>.main>#tabs{flex:none!important;position:relative!important;bottom:auto!important}
 }</style>
 </body>
 </html>
