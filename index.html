@@ -3270,5 +3270,43 @@ html body #app #mview .mv-nav .btn,html body #app #mview #mv-p,html body #app #m
 html body #app #mview #mv-m{font-size:12px!important;min-width:0!important;padding:0 4px!important}
 html body #app #mview #mv-x{height:30px!important;font-size:11px!important;padding:0 11px!important;border-radius:9px!important}
 }</style>
+<style id="admin-fx">
+@keyframes fxRip{to{transform:scale(1);opacity:0}}
+@keyframes fxGlow{0%,100%{box-shadow:0 0 0 0 rgba(120,170,255,.0),0 4px 14px rgba(30,90,220,.35)}50%{box-shadow:0 0 0 4px rgba(120,170,255,.22),0 6px 20px rgba(60,130,255,.55)}}
+@keyframes fxRing{0%{box-shadow:0 0 0 0 rgba(130,180,255,.7)}100%{box-shadow:0 0 0 12px rgba(130,180,255,0)}}
+@keyframes fxRel{0%{transform:scale(.84);filter:brightness(1)}35%{transform:scale(1.14);filter:brightness(1.25)}60%{transform:scale(.95);filter:brightness(1.2)}80%{transform:scale(1.03)}100%{transform:scale(1);filter:brightness(1)}}
+@keyframes fxPop{0%{transform:scale(.92)}55%{transform:scale(1.06)}100%{transform:scale(1)}}
+body[data-role=admin] .btn,body[data-role=admin] .hbtn,body[data-role=admin] .bz-btn,body[data-role=admin] .hout,body[data-role=admin] .cl-out,body[data-role=admin] .tb,body[data-role=admin] .tb-add,body[data-role=admin] .tw.add,body[data-role=admin] #tabs button,body[data-role=admin] .pgr button,body[data-role=admin] #hub button,body[data-role=admin] #mview button{position:relative;overflow:hidden!important;-webkit-tap-highlight-color:transparent;transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s ease,filter .28s ease,background-color .25s ease,border-color .25s ease!important;will-change:transform}
+@media(hover:hover){
+body[data-role=admin] .btn:hover,body[data-role=admin] .hbtn:hover,body[data-role=admin] .bz-btn:hover,body[data-role=admin] .hout:hover,body[data-role=admin] .cl-out:hover,body[data-role=admin] .tb:hover,body[data-role=admin] .tb-add:hover,body[data-role=admin] .tw.add:hover,body[data-role=admin] #tabs button:hover,body[data-role=admin] .pgr button:hover,body[data-role=admin] #hub button:hover,body[data-role=admin] #mview button:hover{transform:translateY(-2px) scale(1.035);filter:brightness(1.12) saturate(1.1);box-shadow:0 8px 22px rgba(40,100,230,.38),inset 0 1px 0 rgba(255,255,255,.35)}
+}
+body[data-role=admin] .btn:active,body[data-role=admin] .hbtn:active,body[data-role=admin] .bz-btn:active,body[data-role=admin] .hout:active,body[data-role=admin] .cl-out:active,body[data-role=admin] .tb:active,body[data-role=admin] .tb-add:active,body[data-role=admin] .tw.add:active,body[data-role=admin] #tabs button:active,body[data-role=admin] .pgr button:active,body[data-role=admin] #hub button:active,body[data-role=admin] #mview button:active{transform:scale(.84);filter:brightness(.9);box-shadow:inset 0 3px 10px rgba(0,0,40,.45),0 1px 3px rgba(0,0,0,.3)!important;transition-duration:.09s!important}
+body[data-role=admin] .btn:focus-visible,body[data-role=admin] .hbtn:focus-visible,body[data-role=admin] .bz-btn:focus-visible,body[data-role=admin] .hout:focus-visible,body[data-role=admin] .cl-out:focus-visible,body[data-role=admin] .tb:focus-visible,body[data-role=admin] .tb-add:focus-visible,body[data-role=admin] .tw.add:focus-visible,body[data-role=admin] #tabs button:focus-visible,body[data-role=admin] .pgr button:focus-visible,body[data-role=admin] #hub button:focus-visible,body[data-role=admin] #mview button:focus-visible{outline:2px solid rgba(140,190,255,.9);outline-offset:2px}
+body[data-role=admin] .fx-rip{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.75) 0%,rgba(150,195,255,.45) 45%,rgba(255,255,255,0) 70%);transform:scale(0);animation:fxRip .75s cubic-bezier(.2,.7,.3,1) forwards;z-index:3}
+body[data-role=admin] #tabs .tb.on,body[data-role=admin] .tb.on{animation:fxGlow 2.6s ease-in-out infinite}
+body[data-role=admin] .fx-rel{animation:fxRel .55s cubic-bezier(.3,1.4,.5,1),fxRing .6s ease-out}
+body[data-role=admin] #biz .bz-btn:hover{transform:none;filter:none;box-shadow:inherit}
+body[data-role=admin] #biz .bz-btn{overflow:visible!important;will-change:auto;transition:transform .2s ease}
+body[data-role=admin] #biz .bz-btn:active{filter:none;box-shadow:0 6px 12px -8px #04223aee,0 2px 0 #ffffff14 inset,0 -6px 12px -8px #00000066 inset,0 0 0 1px #0a3556!important;transform:scale(.96)}
+body[data-role=admin] #biz .fx-rel{animation:none}
+body[data-role=admin] #biz .fx-rip{display:none}
+body[data-role=admin] .fx-spk{position:fixed;width:7px;height:7px;margin:-3px 0 0 -3px;border-radius:50%;pointer-events:none;z-index:9999;background:radial-gradient(circle,#fff,#38b6f0 60%,#0369a1);box-shadow:0 0 8px #38b6f0;animation:fxSpk .7s cubic-bezier(.1,.7,.3,1) forwards}
+@keyframes fxSpk{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+@keyframes fxWave{from{opacity:.8;transform:scale(1)}to{opacity:0;transform:scale(1.5,1.9)}}
+body[data-role=admin] .fx-wave{position:absolute;inset:0;border-radius:inherit;pointer-events:none;border:2px solid #7cc8ff;box-shadow:0 0 14px #38b6f0;animation:fxWave .6s ease-out forwards;z-index:4}
+@media(prefers-reduced-motion:reduce){body[data-role=admin] *{animation:none!important;transition:none!important}}
+</style>
+<script id="admin-fx-js">(function(){
+var SEL='button:not(.x):not([disabled]),[role=button],.btn,.hbtn,.bz-btn,.hout,.cl-out,.cl-r,.tb,.tb-add,.tw.add,.chip,.cd,.x,summary,label.tg,#dprev,#dnext,#mvb,#theme,#moon,#dout,#dtheme';
+document.addEventListener('pointerdown',function(e){
+ if(document.body.getAttribute('data-role')!=='admin')return;
+ var b=e.target.closest&&e.target.closest(SEL);if(!b||b.disabled||b.closest('#biz'))return;
+ var r=b.getBoundingClientRect(),d=Math.max(r.width,r.height)*2.8,s=document.createElement('span');
+ s.className='fx-rip';s.style.cssText='width:'+d+'px;height:'+d+'px;left:'+(e.clientX-r.left-d/2)+'px;top:'+(e.clientY-r.top-d/2)+'px';
+ if(getComputedStyle(b).position==='static')b.style.position='relative';b.appendChild(s);setTimeout(function(){s.remove()},700);for(var i=0;i<10;i++){var k=document.createElement('i');k.className='fx-spk';var a=Math.random()*6.283,dd=30+Math.random()*50;k.style.cssText='left:'+e.clientX+'px;top:'+e.clientY+'px;--dx:'+Math.cos(a)*dd+'px;--dy:'+Math.sin(a)*dd+'px';document.body.appendChild(k);(function(k){setTimeout(function(){k.remove()},750)})(k)}var w=document.createElement('span');w.className='fx-wave';b.appendChild(w);setTimeout(function(){w.remove()},650);
+ var rel=function(){b.removeEventListener('pointerup',rel);b.removeEventListener('pointercancel',rel);b.removeEventListener('pointerleave',rel);b.classList.remove('fx-rel');void b.offsetWidth;b.classList.add('fx-rel');setTimeout(function(){b.classList.remove('fx-rel')},600)};b.addEventListener('pointerup',rel);b.addEventListener('pointercancel',rel);b.addEventListener('pointerleave',rel);
+ try{if(navigator.vibrate)navigator.vibrate(8)}catch(x){}
+},true);
+})();</script>
 </body>
 </html>
