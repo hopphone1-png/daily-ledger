@@ -1786,9 +1786,11 @@ $('#mview').addEventListener('click',e=>{const t=e.target.closest('[data-open]')
 const CL={"n2":"Players","avg":"Avg per player","act":"Active in 7 days","a": "CS code", "b": "Last visit", "c": "Total in this month", "n": "players", "t": "Total in", "none": "No player codes this month.", "ago": "d ago", "today": "today"};
 function csData(){const mon=(S.date||iso(new Date())).slice(0,7),days=allDays(),m={};
   Object.keys(days).filter(k=>k.startsWith(mon)).sort().forEach(k=>(days[k].rows||[]).forEach(r=>{if(r.type===NS)return;const c=cd(r.code).toUpperCase();if(!c||/^0+$/.test(c))return;
-    const o=m[c]=m[c]||{a:c,b:'',bt:'',c:0,o:0,ds:new Set()};const t=r.time||'';if(k>o.b||(k===o.b&&t>o.bt)){o.b=k;o.bt=t}o.ds.add(k);
-    [...BANKS.map(([b])=>b),'transfer'].forEach(b=>{const v=r[b];if(typeof v==='number'){if(v>0)o.c+=v;else o.o-=v}})}));
-  const list=Object.values(m);list.forEach(o=>{o.d=Math.round((o.c-o.o)*100)/100;o.e=o.ds.size});return{mon,list}}
+    const o=m[c]=m[c]||{a:c,b:'',bt:'',c:0,o:0,pi:0,ds:new Set()};const t=r.time||'';if(k>o.b||(k===o.b&&t>o.bt)){o.b=k;o.bt=t}o.ds.add(k);
+    let net=0;BANKS.forEach(([b])=>{const v=r[b];if(typeof v==='number'){net+=v;if(v>0)o.pi+=v;else o.o-=v}});
+    if(typeof r.transfer==='number'){if(r.transfer>0)o.pi+=r.transfer;else o.o-=r.transfer}
+    if(net>0)o.c+=net}));
+  const list=Object.values(m);list.forEach(o=>{o.d=Math.round((o.pi-o.o)*100)/100;o.c=Math.round(o.c*100)/100;o.e=o.ds.size});return{mon,list}}
 function renderCS(){const {mon,list}=csData(),q=$('#cs-q').value.trim().toUpperCase(),now=iso(new Date());$('#cs-m').textContent=mon;
   let L=list.filter(x=>!q||x.a.includes(q));const {k,d}=csSort;if(q!==csQ0){csQ0=q;csPg=0}L.sort((x,y)=>{const a=x[k],b=y[k];return (typeof a==='number'?a-b:String(a).localeCompare(String(b),undefined,{numeric:true}))*d||x.a.localeCompare(y.a)});
   const tot=list.reduce((a,x)=>a+x.c,0),wl=list.reduce((a,x)=>a+x.d,0),ar=c=>c===k?(d>0?' ↑':' ↓'):'',sgn=v=>(v>0?'+':v<0?'−':'')+money(Math.abs(v)),cl=v=>v>0?'pos':v<0?'neg':'';
