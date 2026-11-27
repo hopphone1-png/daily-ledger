@@ -1423,7 +1423,7 @@ function shell(){
     <label class="lg-rm"><input type="checkbox" id="lg-rm" checked> Remember me</label><p class="lg-err" id="lg-err"></p><button class="btn go" type="submit">Sign in</button></form></div>
   <div class="mask" id="nmask"><div class="dlg wide"><h3>Edit names and start</h3><div class="ncols"><div><h4>Banks</h4><div id="nb"></div><button class="btn sm" id="nb-add">+ Add bank</button></div><div><h4>Games</h4><div id="ng"></div><button class="btn sm" id="ng-add">+ Add game</button></div></div>
     <p class="note" id="nnote"></p><div class="acts"><button class="btn" id="nn-no">Cancel</button><button class="btn go" id="nn-yes">Save</button></div></div></div>
-  <div class="mask" id="lmask"><div class="dlg wide"><h3>Change log</h3><p style="margin:0 0 10px;color:#64748b">What was deleted or changed. Newest first.</p><div id="lgv-w"><table id="lgv-t"><thead><tr><th>Time</th><th>Who</th><th>Sheet</th><th>Row</th><th>Field</th><th>Action</th><th>Was → Now</th></tr></thead><tbody id="lgv-b"></tbody></table></div><div class="acts"><button class="btn" id="lgv-f">Show all changes</button><button class="btn go" id="lgv-x">Close</button></div></div></div>
+  <div class="mask" id="lmask"><div class="dlg wide"><h3>修改记录</h3><p style="margin:0 0 10px;color:#64748b">谁删除或修改了什么，最新的在最上面。</p><div id="lgv-w"><div id="lgv-b"></div></div><div class="acts"><button class="btn" id="lgv-f">显示全部修改</button><button class="btn go" id="lgv-x">关闭</button></div></div></div>
   <div class="toast" id="toast"></div>`;
 }
 function fitCols(){const cg=$('#cg'),wrap=$('#wrap');if(!cg||!wrap||!COLS.length)return;const z=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tz'))||1,base=COLS.map(c=>Math.round(c.w*cws)),S=46+base.reduce((a,b)=>a+b,0),ex=Math.max(0,Math.floor((wrap.clientWidth/z-2-S)/COLS.length)),cols=cg.children;if(cols[0])cols[0].style.width='46px';base.forEach((w,i)=>{if(cols[i+1])cols[i+1].style.width=(w+ex)+'px'});cg.parentNode.style.width=(S+ex*COLS.length)+'px'}
@@ -1589,12 +1589,18 @@ shell();renderCards();renderTng();render();status();
  let only=true,rowsA=[];
  const sm=r=>{const a=[r.code,r.type,r.remark];BANKS.forEach(([k,c,ci,nm])=>{if(typeof r[k]==='number'&&r[k])a.push(nm+' '+r[k])});if(typeof r.transfer==='number'&&r.transfer)a.push('Transfer '+r.transfer);if(r.bonus)a.push('Bonus '+r.bonus);return a.filter(Boolean).join(' · ')};
  const draw=()=>{const a=rowsA.filter(x=>!only||x.del);
-  $('#lgv-b').innerHTML=a.length?a.map(x=>`<tr class="${x.del?'del':''}"><td>${hm(x.at)}</td><td>${esc(x.login||'')}</td><td>${esc(x.day?String(x.day).slice(5):'')}</td><td>${x.n}</td><td>rows</td><td><span class="lgt">${x.del?'Deleted':'Changed'}</span></td><td style="white-space:normal;min-width:260px">${esc(x.was)}${x.now?' → '+esc(x.now):''}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">Nothing here yet.</td></tr>';
-  $('#lgv-f').textContent=only?"Show all changes":"Deleted only"};
+  const am=(n,v)=>'<span class="lam '+(v<0?'ng':'ps')+'">'+esc(n)+' '+(v>0?'+':'')+v+'</span>';
+  const line=r=>{let h='';[r.code,r.type,r.remark].filter(Boolean).forEach((t,i)=>h+='<span class="lt'+(i===1?' g':'')+'">'+esc(t)+'</span>');
+   BANKS.forEach(([k,c,ci,nm])=>{if(typeof r[k]==='number'&&r[k])h+=am(nm,r[k])});if(typeof r.transfer==='number'&&r.transfer)h+=am('转账',r.transfer);if(r.bonus)h+='<span class="lt">赠送 '+r.bonus+'%</span>';return '<div class="lrow">'+(h||'<span class="lt">(空行)</span>')+'</div>'};
+  const blk=(t,rs,cls)=>rs&&rs.length?'<details open class="lblk '+cls+'"><summary>'+t+' · '+rs.length+' 行</summary>'+rs.map(line).join('')+'</details>':'';
+  $('#lgv-b').innerHTML=a.length?a.map(x=>{const d=x.detail||{};const full=x.action==='delete_day';
+   return '<div class="lev'+(x.del?' del':'')+'"><div class="lh"><span class="lgt'+(x.del?'':' ch')+'">'+(full?'整张表已删除':x.del?'删除':'修改')+'</span><b class="ld">'+esc(x.day?String(x.day).slice(5):'')+'</b><span class="lw">'+esc(x.login||'')+' · '+hm(x.at)+'</span></div>'+
+   (full?blk('被删除的内容',d.rows,'r'):blk('删除了',d.removed,'r')+blk('新增了',d.added,'a'))+'</div>'}).join(''):'<div class="empty">暂无记录</div>';
+  $('#lgv-f').textContent=only?"显示全部修改":"只看删除"};
  const load=async()=>{try{const {data,error}=await SB.from('audit_log').select('*').order('at',{ascending:false}).limit(300);if(error)throw error;
    rowsA=(data||[]).map(x=>{const d=x.detail||{};if(x.action==='delete_day'){const rs=d.rows||[];return {...x,del:true,n:rs.length,was:'Whole sheet deleted ('+rs.length+' rows)',now:''}}
-     const rm=d.removed||[],ad=d.added||[];return {...x,del:!ad.length,n:rm.length,was:rm.map(sm).join(' | '),now:ad.map(sm).join(' | ')}});draw()}catch(e){$('#lgv-b').innerHTML='<tr><td colspan="7" class="empty">Could not load the log.</td></tr>'}};
- $('#logb').onclick=()=>{closeEd();only=true;$('#lgv-b').innerHTML='<tr><td colspan="7" class="empty">Loading…</td></tr>';$('#lmask').classList.add('on');load()};
+     const rm=d.removed||[],ad=d.added||[];return {...x,del:!ad.length,n:rm.length,was:rm.map(sm).join(' | '),now:ad.map(sm).join(' | ')}});draw()}catch(e){$('#lgv-b').innerHTML='<div class="empty">无法加载记录</div>'}};
+ $('#logb').onclick=()=>{closeEd();only=true;$('#lgv-b').innerHTML='<div class="empty">加载中…</div>';$('#lmask').classList.add('on');load()};
  $('#lgv-f').onclick=()=>{only=!only;draw()};$('#lgv-x').onclick=()=>$('#lmask').classList.remove('on');logN=function(){}}
 $('#th').addEventListener('click',e=>{const th=e.target.closest('th.srt');if(!th)return;closeEd();const k=th.dataset.k;
   if(!k){sortK='';sortD=0}else if(sortK!==k){sortK=k;sortD=1}else sortD=sortD===1?-1:sortD===-1?0:1;if(!sortD)sortK='';
@@ -3077,5 +3083,43 @@ let n=0,did=false;const iv=setInterval(()=>{n++;if(n>120){clearInterval(iv);retu
  if(!did){did=true;let seen=false;try{seen=sessionStorage.getItem(KEY)==='1'}catch(x){}if(!seen)show()}},200);
 }catch(e){}})();</script>
 <style id="hide-saved">html body #app #st:not(.dirty){display:none!important}</style>
+<style id="log-clean">
+html body #lmask #lgv-w{max-height:60vh;overflow:auto;padding-right:4px}
+#lgv-b .lev{border:1px solid #e3ebf4;border-radius:14px;padding:10px 12px;margin:0 0 10px;background:#fff}
+#lgv-b .lev.del{border-color:#f6c9c9;background:#fff7f7}
+#lgv-b .lh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#lgv-b .lgt{display:inline-block;padding:3px 10px;border-radius:999px;background:#dc2626;color:#fff;font-size:12px;font-weight:700}
+#lgv-b .lgt.ch{background:#d97706}
+#lgv-b .ld{font-size:15px;color:#0c3556}
+#lgv-b .lw{margin-left:auto;font-size:12.5px;color:#64748b;white-space:nowrap}
+#lgv-b .lblk{margin-top:8px;font-size:13px}
+#lgv-b .lblk summary{cursor:pointer;font-weight:600;color:#475569;list-style:revert}
+#lgv-b .lblk.a summary{color:#15803d}#lgv-b .lblk.r summary{color:#b91c1c}
+#lgv-b .lrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;border-top:1px dashed #e5ecf3}
+#lgv-b .lt{padding:2px 8px;border-radius:8px;background:#eef3f8;color:#334155;font-size:12.5px}
+#lgv-b .lt.g{background:#e0efff;color:#0b5394;font-weight:600}
+#lgv-b .lam{padding:2px 8px;border-radius:8px;font-size:12.5px;font-weight:700}
+#lgv-b .lam.ng{background:#fee2e2;color:#b91c1c}#lgv-b .lam.ps{background:#dcfce7;color:#15803d}
+#lgv-b .empty{padding:24px;text-align:center;color:#64748b}
+@media(max-width:700px){#lgv-b .lw{margin-left:0;width:100%}}
+html[data-neon="1"] #lgv-b .lev{background:#161F22;border-color:rgba(176,184,188,.16)}html[data-neon="1"] #lgv-b .lev.del{background:#221a1b;border-color:rgba(248,113,113,.3)}
+html[data-neon="1"] #lgv-b .ld{color:#fff}html[data-neon="1"] #lgv-b .lw,html[data-neon="1"] #lgv-b .lblk summary,html[data-neon="1"] #lgv-b .empty{color:#B0B8BC}
+html[data-neon="1"] #lgv-b .lt{background:#243236;color:#d6dde0}html[data-neon="1"] #lgv-b .lt.g{background:#173a52;color:#7dd3fc}
+html[data-neon="1"] #lgv-b .lrow{border-top-color:rgba(176,184,188,.16)}
+html[data-neon="1"] #lgv-b .lam.ng{background:#3b1a1a;color:#fca5a5}html[data-neon="1"] #lgv-b .lam.ps{background:#12301f;color:#86efac}
+</style>
+<script id="theme-resp">(function(){try{const mq=matchMedia('(max-width:700px)');
+function fix(){const b=document.getElementById('dtheme');if(!b)return;
+ if(mq.matches){const o=document.getElementById('dout');if(o&&o.parentNode&&b.parentNode!==o.parentNode)o.parentNode.insertBefore(b,o.nextSibling)}
+ else{const t=document.querySelector('#app .top #lgo');if(t&&t.parentNode&&b.parentNode!==t.parentNode)t.parentNode.insertBefore(b,t)}}
+(mq.addEventListener?mq.addEventListener('change',fix):mq.addListener(fix));window.addEventListener('resize',fix);
+new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});fix()}catch(e){}})();</script>
+<style id="kpi-blue">@media(max-width:700px){
+html:not([data-neon="1"]) body #app .tot.kpi.kpi.kpi.kpi .kg>div:is(:has(#w-net),:has(#w-dep),:has(#w-wd),:has(#uc-all),:has(#w-pl)){background:linear-gradient(180deg,#bddcf2 0%,#9cc7e6 100%)!important;border:1px solid #7fb0d6!important;border-radius:14px!important;position:relative!important;overflow:hidden!important;box-shadow:inset 0 1px 0 #fff,0 10px 22px -16px rgba(10,60,100,.7)!important}
+html:not([data-neon="1"]) body #app .tot.kpi.kpi.kpi.kpi .kg>div:is(:has(#w-net),:has(#w-dep),:has(#w-wd),:has(#uc-all),:has(#w-pl))::after{content:''!important;display:block!important;position:absolute!important;left:12px!important;right:auto!important;top:0!important;bottom:auto!important;width:22px!important;height:3px!important;border-radius:0 0 4px 4px!important;background:linear-gradient(90deg,#1d7fc4,#06406e)!important;box-shadow:none!important}
+html:not([data-neon="1"]) body #app .tot.kpi.kpi.kpi.kpi .kg>div:is(:has(#w-net),:has(#w-dep),:has(#w-wd),:has(#uc-all),:has(#w-pl)) span{color:#2d5c82!important;-webkit-text-fill-color:#2d5c82!important;font-weight:600!important;letter-spacing:.06em!important}
+html:not([data-neon="1"]) body #app .tot.kpi.kpi.kpi.kpi .kg>div:is(:has(#w-net),:has(#w-dep),:has(#w-wd),:has(#uc-all),:has(#w-pl)) span::before{background:#1d5f94!important;color:#1d5f94!important;filter:none!important}
+html:not([data-neon="1"]) body #app .tot.kpi.kpi.kpi.kpi .kg>div:is(:has(#w-net),:has(#w-dep),:has(#w-wd),:has(#uc-all),:has(#w-pl)) b{color:#052039!important;-webkit-text-fill-color:#052039!important;font-weight:700!important;font-variant-numeric:tabular-nums!important;text-shadow:none!important}
+html:not([data-neon="1"]) body #app .tot.kpi.kpi.kpi.kpi .kg>div:is(:has(#w-net),:has(#w-dep),:has(#w-wd),:has(#uc-all),:has(#w-pl)):has(#w-net) b{color:#0a6e43!important;-webkit-text-fill-color:#0a6e43!important}}</style>
 </body>
 </html>
