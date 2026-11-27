@@ -3074,5 +3074,6 @@ let n=0,did=false;const iv=setInterval(()=>{n++;if(n>120){clearInterval(iv);retu
  if(!$('#tabs #tb-list')){home();const tb=$('#tabs');if(tb&&!tb._cl){tb._cl=1;new MutationObserver(home).observe(tb,{childList:true})}}
  if(!did){did=true;let seen=false;try{seen=sessionStorage.getItem(KEY)==='1'}catch(x){}if(!seen)show()}},200);
 }catch(e){}})();</script>
+<style id="hide-saved">html body #app #st:not(.dirty){display:none!important}</style>
 </body>
 </html>
