@@ -2959,5 +2959,10 @@ html body #mview #mv-days tbody tr:hover td{background:transparent!important}</s
 html[data-neon="1"]:has(#mview:not([hidden])) body #app .tabs .tb.on:not(#tb-mv){background:#161F22!important;color:#B0B8BC!important;border:1px solid rgba(176,184,188,.15)!important;box-shadow:none!important}</style>
 <style id="vh-fix">@media(max-width:700px){html body #app{height:var(--appH,100dvh)!important;max-height:var(--appH,100dvh)!important}html,body{height:var(--appH,100%)!important}}</style>
 <script id="vh-fix-js">(function(){try{const r=document.documentElement;const f=()=>{const h=Math.round(Math.min(window.innerHeight||9999,(window.visualViewport&&window.visualViewport.height)||9999));if(h>200&&h<9999)r.style.setProperty('--appH',h+'px')};f();addEventListener('resize',f);addEventListener('orientationchange',()=>setTimeout(f,200));if(window.visualViewport)window.visualViewport.addEventListener('resize',f);addEventListener('pageshow',f);addEventListener('load',f);setTimeout(f,500);setTimeout(f,1500)}catch(e){}})();</script>
+<style id="tabs-fixed">@media(max-width:700px){
+html body #app{box-sizing:border-box!important;padding-bottom:var(--tbH,51px)!important}
+html body #app>.main>#tabs{position:fixed!important;left:4px!important;right:4px!important;bottom:0!important;top:auto!important;z-index:45!important;width:auto!important;box-sizing:border-box!important}
+}</style>
+<script id="tabs-fixed-js">(function(){try{const m=()=>{const t=document.getElementById('tabs');if(t&&t.offsetHeight>20)document.documentElement.style.setProperty('--tbH',t.offsetHeight+'px')};m();addEventListener('resize',m);addEventListener('load',m);setTimeout(m,600);setTimeout(m,1800);new MutationObserver(m).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class']})}catch(e){}})();</script>
 </body>
 </html>
