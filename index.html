@@ -1910,7 +1910,7 @@ function syncDB(){const p=(syncing||Promise.resolve()).catch(()=>{}).then(doSync
 if(window.__ROLE&&window.SB){
   SB.channel('ledger-rt')
    .on('postgres_changes',{event:'*',schema:'public',table:'days'},p=>{try{
-     if(p.eventType==='DELETE'){const k=p.old&&p.old.day;if(k&&k in S.days&&k!==S.date&&!dirty){delete S.days[k];delete SNAP[k];delete VER[k];delete BASE[k];refreshViews()}return}
+     if(p.eventType==='DELETE'){const k=p.old&&p.old.day;if(k&&k in S.days&&!dirty&&!ed){delete S.days[k];delete SNAP[k];delete VER[k];delete BASE[k];if(k===S.date){try{loadDayInto({rows:[],open:{},games:{},adds:[]})}catch(e){}}refreshViews()}return}
      const row=p.new;if(!row)return;if((VER[row.day]||0)>=row.version)return;
      if(dirty||ed){PEND[row.day]=1;return}
      applyRemote(row.day,row)}catch(e){}})
@@ -2964,5 +2964,11 @@ html body #app{box-sizing:border-box!important;padding-bottom:var(--tbH,51px)!im
 html body #app>.main>#tabs{position:fixed!important;left:4px!important;right:4px!important;bottom:0!important;top:auto!important;z-index:45!important;width:auto!important;box-sizing:border-box!important}
 }</style>
 <script id="tabs-fixed-js">(function(){try{const m=()=>{const t=document.getElementById('tabs');if(t&&t.offsetHeight>20)document.documentElement.style.setProperty('--tbH',t.offsetHeight+'px')};m();addEventListener('resize',m);addEventListener('load',m);setTimeout(m,600);setTimeout(m,1800);new MutationObserver(m).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class']})}catch(e){}})();</script>
+<style id="mv-unlock">@media(max-width:700px){
+html body .mview{overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch;bottom:var(--tbH,51px)!important}
+html body .mview:not([hidden]) .mv-in{display:block!important;height:auto!important;max-height:none!important;padding-bottom:16px!important}
+html body .mview .mv-in>.mv-top,html body .mview .mv-in>.m2-hero,html body .mview .mv-in>.m2-kpis,html body .mview .mv-in>.m2-tabs{position:relative!important;top:auto!important}
+html body .mview .mv-scroll{flex:none!important;min-height:0!important;overflow:visible!important;padding-bottom:12px!important}
+}</style>
 </body>
 </html>
