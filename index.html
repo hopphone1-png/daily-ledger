@@ -1733,7 +1733,7 @@ function renderMonth(){const days=allDays(),keys=Object.keys(days).filter(k=>k.s
     Object.entries(s.bank).forEach(([b,v])=>{const t=M.bank[b]=M.bank[b]||{i:0,o:0};t.i+=v.i;t.o+=v.o});Object.entries(s.game).forEach(([g,v])=>M.game[g]=(M.game[g]||0)+v);return{k,d:+k.slice(8),...s}});
   M.net=Math.round(M.net*100)/100;M.uc=Math.round(M.uc*100)/100;
   $('#m2-lab').textContent=ML.mon+' '+mvMonth;
-  if(!keys.length){$('#m2-net').textContent='—';$('#m2-sub').textContent=ML.nodata;['#m2-hc','#m2-kpis','#m2-cal','#m2-games','#m2-banks','#mv-days'].forEach(s=>$(s).innerHTML='');return}
+  if(!keys.length){$('#m2-net').textContent='—';$('#m2-sub').textContent=ML.nodata;['#m2-hc','#m2-kpis','#m2-cal','#m2-games','#m2-banks','#mv-days','#m2-hs','#m2-ex','#m2-xg'].forEach(s=>{const e=$(s);if(e)e.innerHTML=''});['#m2-xt','#m2-xs','#m2-gt'].forEach(s=>{const e=$(s);if(e)e.textContent=''});return}
   const n=$('#m2-net');n.textContent=sg(M.net);n.className=cls(M.net);
   $('#m2-sub').textContent=`${M.dep?Math.round(M.net/M.dep*1000)/10:0}% ${ML.of} · ${sg(Math.round(M.net/keys.length))} ${ML.avg} · ${keys.length} ${ML.days}`;
   {const best=mvPer.reduce((a,b)=>b.net>a.net?b:a),worst=mvPer.reduce((a,b)=>b.net<a.net?b:a);
@@ -1786,11 +1786,9 @@ $('#mview').addEventListener('click',e=>{const t=e.target.closest('[data-open]')
 const CL={"n2":"Players","avg":"Avg per player","act":"Active in 7 days","a": "CS code", "b": "Last visit", "c": "Total in this month", "n": "players", "t": "Total in", "none": "No player codes this month.", "ago": "d ago", "today": "today"};
 function csData(){const mon=(S.date||iso(new Date())).slice(0,7),days=allDays(),m={};
   Object.keys(days).filter(k=>k.startsWith(mon)).sort().forEach(k=>(days[k].rows||[]).forEach(r=>{if(r.type===NS)return;const c=cd(r.code).toUpperCase();if(!c||/^0+$/.test(c))return;
-    const o=m[c]=m[c]||{a:c,b:'',bt:'',c:0,o:0,pi:0,ds:new Set()};const t=r.time||'';if(k>o.b||(k===o.b&&t>o.bt)){o.b=k;o.bt=t}o.ds.add(k);
-    let net=0;BANKS.forEach(([b])=>{const v=r[b];if(typeof v==='number'){net+=v;if(v>0)o.pi+=v;else o.o-=v}});
-    if(typeof r.transfer==='number'){if(r.transfer>0)o.pi+=r.transfer;else o.o-=r.transfer}
-    if(net>0)o.c+=net}));
-  const list=Object.values(m);list.forEach(o=>{o.d=Math.round((o.pi-o.o)*100)/100;o.c=Math.round(o.c*100)/100;o.e=o.ds.size});return{mon,list}}
+    const o=m[c]=m[c]||{a:c,b:'',bt:'',c:0,o:0,ds:new Set()};const t=r.time||'';if(k>o.b||(k===o.b&&t>o.bt)){o.b=k;o.bt=t}o.ds.add(k);
+    [...BANKS.map(([b])=>b),'transfer'].forEach(b=>{const v=r[b];if(typeof v==='number'){if(v>0)o.c+=v;else o.o-=v}})}));
+  const list=Object.values(m);list.forEach(o=>{o.d=Math.round((o.c-o.o)*100)/100;o.e=o.ds.size});return{mon,list}}
 function renderCS(){const {mon,list}=csData(),q=$('#cs-q').value.trim().toUpperCase(),now=iso(new Date());$('#cs-m').textContent=mon;
   let L=list.filter(x=>!q||x.a.includes(q));const {k,d}=csSort;if(q!==csQ0){csQ0=q;csPg=0}L.sort((x,y)=>{const a=x[k],b=y[k];return (typeof a==='number'?a-b:String(a).localeCompare(String(b),undefined,{numeric:true}))*d||x.a.localeCompare(y.a)});
   const tot=list.reduce((a,x)=>a+x.c,0),wl=list.reduce((a,x)=>a+x.d,0),ar=c=>c===k?(d>0?' ↑':' ↓'):'',sgn=v=>(v>0?'+':v<0?'−':'')+money(Math.abs(v)),cl=v=>v>0?'pos':v<0?'neg':'';
@@ -2091,7 +2089,7 @@ function setup(id){const st={pg:0,sig:''};
   el.hidden=false;el.innerHTML='<button data-p="-1" '+(st.pg<1?'disabled':'')+'>‹</button><span>'+(st.pg+1)+' / '+np+'</span><button data-p="1" '+(st.pg>=np-1?'disabled':'')+'>›</button>'};
  document.addEventListener('click',e=>{const b=e.target.closest('#pg-'+id+' button[data-p]');if(b&&!b.disabled){st.pg+=+b.dataset.p;apply()}});
  const hook=()=>{const t=document.getElementById(id);if(!t){setTimeout(hook,300);return}let busy=0;new MutationObserver(()=>{if(busy)return;busy=1;try{apply()}catch(e){}busy=0}).observe(t,{childList:true});mq.addEventListener('change',apply);apply()};hook()}
-setup('m2-ex');setup('m2-xg');
+setup('m2-ex');setup('m2-xg');setup('mv-days');
 }catch(e){}})();
 </script>
 <style>@media(max-width:700px){html body #app #mview .m2-hero .m2-hs{display:none!important}}</style>
@@ -2972,5 +2970,49 @@ html body .mview:not([hidden]) .mv-in{display:block!important;height:auto!import
 html body .mview .mv-in>.mv-top,html body .mview .mv-in>.m2-hero,html body .mview .mv-in>.m2-kpis,html body .mview .mv-in>.m2-tabs{position:relative!important;top:auto!important}
 html body .mview .mv-scroll{flex:none!important;min-height:0!important;overflow:visible!important;padding-bottom:12px!important}
 }</style>
+<style id="exit-confirm">#xc-m{position:fixed;inset:0;z-index:99999;background:rgba(7,22,38,.45);display:none;align-items:center;justify-content:center;padding:24px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+#xc-m.on{display:flex}
+#xc-m .b{width:min(320px,100%);background:#fff;border-radius:18px;padding:20px 18px 16px;box-shadow:0 20px 50px -12px rgba(7,22,38,.45);text-align:center;font-family:inherit}
+#xc-m .t{font-size:17px;font-weight:800;color:#0c3556;margin:0 0 6px}
+#xc-m .s{font-size:13px;color:#5b6b82;margin:0 0 16px}
+#xc-m .r{display:flex;gap:10px}
+#xc-m button{flex:1;height:44px;border-radius:12px;font:inherit;font-size:15px;font-weight:800;cursor:pointer;border:1px solid #cfe5f4;background:#fff;color:#0369a1}
+#xc-m button.ok{background:#0369a1;border-color:#0369a1;color:#fff}
+html[data-neon="1"] #xc-m .b{background:#161F22;border:1px solid rgba(176,184,188,.18)}
+html[data-neon="1"] #xc-m .t{color:#fff}html[data-neon="1"] #xc-m .s{color:#B0B8BC}
+html[data-neon="1"] #xc-m button{background:#0F1618;color:#B0B8BC;border-color:rgba(176,184,188,.2)}
+html[data-neon="1"] #xc-m button.ok{background:#CFFA48;color:#0F1618;border-color:#CFFA48}</style>
+<script id="exit-confirm-js">(function(){try{
+const phone=()=>matchMedia('(max-width:700px)').matches;
+const admin=()=>document.body&&document.body.dataset.role==='admin';
+let bypass=false,cb=null;
+function box(){let m=document.getElementById('xc-m');if(m)return m;m=document.createElement('div');m.id='xc-m';
+ m.innerHTML='<div class="b"><p class="t">确定要退出吗？</p><p class="s">退出后需要重新登入</p><div class="r"><button type="button" class="no">取消</button><button type="button" class="ok">退出</button></div></div>';
+ document.body.appendChild(m);
+ m.querySelector('.no').onclick=()=>{m.classList.remove('on');const f=m._no;m._no=null;m._ok=null;f&&f()};
+ m.querySelector('.ok').onclick=()=>{m.classList.remove('on');const f=m._ok;m._ok=null;m._no=null;f&&f()};
+ m.addEventListener('click',e=>{if(e.target===m)m.querySelector('.no').click()});return m}
+function ask(ok,no){const m=box();m._ok=ok;m._no=no;m.classList.add('on')}
+window.__askExit=ask;
+document.addEventListener('click',e=>{
+ if(bypass||!phone()||!admin())return;
+ const t=e.target.closest&&e.target.closest('#dout,#lgo,#h-out');if(!t)return;
+ e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+ ask(()=>{bypass=true;try{t.click()}finally{setTimeout(()=>{bypass=false},400)}})
+},true);
+let armed=false,asking=false;
+function arm(){if(armed||!phone()||!admin())return;armed=true;try{history.pushState({xc:1},'')}catch(e){}}
+document.addEventListener('pointerdown',arm,{once:false,passive:true});
+document.addEventListener('touchstart',arm,{passive:true});
+addEventListener('popstate',()=>{
+ if(!armed||!phone()||!admin()||asking)return;
+ asking=true;
+ ask(()=>{armed=false;asking=false;try{history.back()}catch(e){}},()=>{asking=false;try{history.pushState({xc:1},'')}catch(e){}});
+});
+}catch(e){}})();</script>
+<style id="ns-dark" data-neon media="not all">html[data-neon="1"] body #app #t tbody tr.ns td:not(.rh),html[data-neon="1"] body #app #t tbody tr.ns:nth-child(even) td:not(.rh){background:rgba(31,157,85,.22)!important;color:#8fe6b4!important;border-bottom-color:rgba(31,157,85,.35)!important}
+html[data-neon="1"] body #app #t tbody tr.ns td.rh{box-shadow:inset 3px 0 0 #2ecc71!important;color:#2ecc71!important;background:rgba(31,157,85,.22)!important}
+html[data-neon="1"] body #app #t tbody tr.ns td.neg,html[data-neon="1"] body #app #t tbody tr.ns td.pos{color:#8fe6b4!important;font-weight:700}
+html[data-neon="1"] body #app #t tbody tr.ns td.xt,html[data-neon="1"] body #app #t tbody tr.ns:nth-child(even) td.xt{background:rgba(31,157,85,.22)!important}</style>
 </body>
 </html>
