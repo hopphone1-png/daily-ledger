@@ -1391,7 +1391,7 @@ function shell(){
   <div class="tabs" id="tabs"></div>
   <div class="foot"><span id="cnt"></span><span id="smp"></span><span class="sp"></span><span class="keys">Just type to enter · <kbd>Enter</kbd> next row · <kbd>Tab</kbd> next cell · <kbd>Shift</kbd>+arrows select · <kbd>Ctrl C/V</kbd> works with Google Sheet · numbers can be <kbd>=10+5</kbd></span></div></div>
   <div class="mask" id="dmask"><div class="dlg"><h3 id="dm-t">Delete this sheet?</h3><p>All records on this date will be removed. Press Save after to keep the change online.</p><div class="acts"><button class="btn" id="dm-no">Cancel</button><button class="btn" id="dm-yes" style="background:#d62f3f;border-color:#d62f3f;color:#fff">Delete sheet</button></div></div></div>
-  <div class="mask" id="cmask"><div class="dlg"><h3>Copy to new month</h3><p>From <b id="cm-from"></b> to the new sheet:</p><ul style="margin:-8px 0 14px;padding-left:18px;color:var(--mut);line-height:1.7"><li><b style="color:var(--ink)">Last bank balance</b> → new Start</li><li><b style="color:var(--ink)">Last game balance</b> → new Start</li><li><b style="color:var(--ink)">Last TNG limit</b> carries on (24-hour rule keeps counting)</li></ul><p style="margin-top:0">Records are not copied.</p>
+  <div class="mask" id="cmask"><div class="dlg"><h3>Copy to new month</h3><p>From <b id="cm-from"></b> to the new sheet:</p>
     <label style="display:block;font-size:13px;font-weight:700;color:var(--mut);margin-bottom:6px">New sheet date</label><input type="date" class="fld" id="cm-date" style="width:100%;margin-bottom:8px"><p class="note" id="cm-note"></p>
     <div class="acts"><button class="btn" id="cm-no">Cancel</button><button class="btn go" id="cm-yes">Copy</button></div></div></div>
   <div class="mask" id="ndmask"><div class="dlg"><h3 id="nd-t">Start a new day?</h3><p id="nd-p"></p><div class="acts"><button class="btn" id="nd-no">Cancel</button><button class="btn go" id="nd-yes">Confirm</button></div></div></div>
@@ -1686,7 +1686,7 @@ $('#csv').onclick=async()=>{const csv='\ufeff'+allTsv().split('\n').map(l=>l.spl
   try{await dl.save({filename:'ledger-'+(S.date||'today')+'.csv',data:new Blob([csv],{type:'text/csv'})})}catch(e){toast('Download cancelled')}};
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const addDay=(s,n)=>{const d=new Date(s+'T00:00');d.setDate(d.getDate()+n);return iso(d)};
-$('#nd').onclick=()=>{closeEd();const t=addDay(S.date||iso(new Date()),1);$('#nd-t').textContent='Start '+t+'?';$('#nd-p').textContent=S.days[t]?'The sheet for '+t+' already exists. It will open as it is.':'A new empty sheet opens. Today\'s closing bank and game balances become its Start.';$('#ndmask').classList.add('on');$('#nd-yes').focus()};
+$('#nd').onclick=()=>{closeEd();const t=addDay(S.date||iso(new Date()),1);$('#nd-t').textContent='Start '+t+'?';$('#nd-p').textContent=S.days[t]?'The sheet for '+t+' already exists. It will open as it is.':'';$('#ndmask').classList.add('on');$('#nd-yes').focus()};
 $('#nd-no').onclick=()=>$('#ndmask').classList.remove('on');
 $('#nd-yes').onclick=()=>{$('#ndmask').classList.remove('on');switchDay(addDay(S.date||iso(new Date()),1))};
 $('#ddel').onclick=()=>{closeEd();$('#dm-t').textContent='Delete the sheet for '+S.date+'?';$('#dmask').classList.add('on')};
@@ -1714,7 +1714,7 @@ $('#ap-yes').onclick=()=>{const g=$('#ap-g').value,p=parse({num:1},$('#ap-p').va
   touch();summary();$('#ap-p').value='';apDraw();$('#ap-p').focus();toast('+'+money(p)+' pts to '+g)};
 function renderTabs(){const el=$('#tabs');if(!el)return;const L=[...new Set([...Object.keys(S.days).filter(k=>(S.days[k].rows||[]).length||S.days[k].keep||(S.days[k].adds||[]).length),S.date])].filter(Boolean).sort();
   el.innerHTML='<button class="tb cs'+(csOn?' on':'')+'" id="tb-cs">CS DATA</button><span class="tsep"></span><button class="tb-add" id="tb-add" title="New day" aria-label="New day">+</button>'+L.map(d=>`<button class="tb${d===S.date&&!csOn?' on':''}" data-day="${esc(d)}" title="${esc(d)}">${esc(d.slice(5))}</button>`).join('');
-  const on=el.querySelector('.tb.on');if(on)on.scrollIntoView({block:'nearest',inline:'nearest'})}
+  const on=el.querySelector('.tb.on');if(on){const l=on.offsetLeft-el.clientWidth/2+on.offsetWidth/2;if(el.scrollTo)el.scrollTo({left:l});else el.scrollLeft=l}}
 $('#tabs').addEventListener('click',e=>{if(e.target.id==='tb-cs'){openCS();return}const t=e.target.closest('[data-day]');if(t){closeCS();switchDay(t.dataset.day);return}if(e.target.id==='tb-add')$('#nd').click()});
 const ML={"bd":"Best day","wdy":"Worst day","win":"Profitable days","dz":"days","pf":"Profit","items":"items","time":"Time","note":"Remark","bank":"Bank","amt":"Amount","after":"Profit after spending","noex":"No Not sale spending this month.","net": "Net profit", "dep": "Deposit", "wd": "Withdraw", "uc": "Upline cost", "pl": "Players", "io": "In / Out", "of": "of deposits", "avg": "a day on average", "days": "days open", "nodata": "No records this month yet.", "wk": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "date": "Date", "total": "Total", "in": "In", "out": "Out", "pts": "pts", "share": "of points", "mon": "Net profit for", "cum": "Running total", "tdn": "Daily net"};
 let mvMonth='',mvPer=[],mvDays=0;
@@ -1809,7 +1809,7 @@ const mv=document.getElementById('mview');mv.dataset.tab='d';
 document.getElementById('m2-tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-t]');if(!b)return;mv.dataset.tab=b.dataset.t;document.querySelectorAll('#m2-tabs button').forEach(x=>x.classList.toggle('on',x===b))});
 }catch(e){}})();
 try{const mq=matchMedia('(max-width:700px)');['keydown','keypress','paste','cut'].forEach(t=>document.getElementById('wrap').addEventListener(t,e=>{if(mq.matches&&!e.target.closest('input,textarea')){e.stopImmediatePropagation();e.preventDefault()}},true))}catch(e){}
-function openCS(){closeEd();csOn=true;$('#csv2').hidden=false;renderCS();renderTabs()}
+function openCS(){if(document.body.dataset.role==='cs')return;closeEd();csOn=true;$('#csv2').hidden=false;renderCS();renderTabs()}
 function closeCS(){if(!csOn)return;csOn=false;$('#csv2').hidden=true;renderTabs()}
 $('#cs-q').addEventListener('input',renderCS);
 document.addEventListener('click',e=>{const b=e.target.closest('#cs-pg button[data-pg]');if(b&&!b.disabled){csPg+=+b.dataset.pg;renderCS();const w=$('#cs-t').closest('.cs-wrap');if(w)w.scrollTop=0}});
@@ -1847,7 +1847,7 @@ $('#dprev').onclick=()=>{const p=dayList().filter(x=>x<S.date).pop();if(p)switch
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&dirty&&art&&!ed)save()});
 try{const mq=matchMedia('(max-width:700px)'),tb=document.getElementById('tabs');const ins=()=>{if(!tb||!mq.matches||tb.querySelector('#tb-mv'))return;const b=document.createElement('button');b.id='tb-mv';b.className='tb cs';b.textContent='Month';b.onclick=()=>document.getElementById('mvb').click();const cs=tb.querySelector('#tb-cs');cs?cs.after(b):tb.prepend(b);const w=document.createElement('div');w.id='tb-pin';b.parentNode.insertBefore(w,cs||b);if(cs)w.appendChild(cs);w.appendChild(b);tb.appendChild(w);const on=tb.querySelector('.tb.on[data-day]');if(on)tb.scrollLeft=on.offsetLeft-tb.clientWidth/2+on.offsetWidth/2};if(tb){new MutationObserver(ins).observe(tb,{childList:true});ins();mq.addEventListener('change',ins)}}catch(e){}
 
-try{const Z={'+ Add bank':'+ 添加银行','+ Add game':'+ 添加游戏','Add TNG':'添加 TNG','Add point':'加分','Avg active days':'平均活跃天数','Back to sheet':'返回表格','Bank':'银行','Bank name':'银行名称','Banks':'银行','Banks this month':'本月银行','Bigger text':'放大文字','Calendar':'日历','Cancel':'取消','Clear sort':'清除排序','Click to sort':'点击排序','Close':'关闭','Colour':'颜色','Confirm':'确认','Copied':'已复制','Copied. Paste it into Google Sheet':'已复制，可贴到 Google Sheet','Copy':'复制','Copy CS code + total in for today':'复制今天的客服代码和总存入','Copy balances to a new month':'把余额复制到新月份','Copy blocked. Select cells and press Ctrl+C':'复制被阻止，请选中格子后按 Ctrl+C','Copy to new month':'复制到新月份','Cost':'成本','Daily Ledger':'每日账目','Daily net':'每日净额','Date':'日期','Day by day':'每日明细','Delete sheet':'删除日期表','Delete this sheet':'删除这张表','Delete this sheet?':'删除这张表？','Deposit':'存款','Download cancelled':'已取消下载','Edit names and start':'编辑名称和初始值','From':'来自','Game':'游戏','Game name':'游戏名称','Games':'游戏','Hide':'隐藏','In / Out':'进 / 出','Last TNG limit':'上次 TNG 额度','Last bank balance':'上次银行余额','Last game balance':'上次游戏余额','Limit':'额度','Monthly report':'月报表','Month':'月报表','Edit':'编辑','Name':'名称','Net':'净赚','New day':'新的一天','New month':'新月份','New sheet date':'新表日期','Next sheet':'下一张','Previous sheet':'上一张','No earlier sheet':'没有更早的表','No later sheet. Press New day to start one':'没有更后的表，按“新的一天”开新的','None (not TNG)':'不是 TNG','Not sale':'非销售','Not sale only':'只看非销售','Not sale spending':'非销售支出','Nothing new to save':'没有新的更改','Paid from which TNG?':'用哪个 TNG 付？','Players':'玩家','Points':'分数','Points and wallets':'分数和钱包','Profit':'利润','Pts used':'已用分数','Records are not copied.':'记录不会被复制。','Redo':'重做','Redo (Ctrl+Y)':'重做 (Ctrl+Y)','Remove':'删除','Reset':'重置','Running total':'累计','Save':'保存','Saved':'已保存','Saving…':'保存中…','Search code':'搜索代码','Search player / code / game':'搜索玩家 / 代码 / 游戏','Sheet':'表','Sign out':'退出登入','Smaller text':'缩小文字','Start':'初始','Start a new day?':'开始新的一天？','Text size':'文字大小','Time':'时间','Today':'今天',"Today's business":'今日业务','Total':'总计','Total in':'总存入','Total win / lose':'总输赢','Undo':'撤销','Undo (Ctrl+Z)':'撤销 (Ctrl+Z)','Unsaved changes are kept on this device until you press Save':'未保存的更改会留在这台电脑上，按保存才会存入','Upline':'上线','Upline rate %':'上线比例 %','Withdraw':'提款','Remark':'备注','Code':'代码','Transfer':'转账','(%) Bonus':'(%) 赠送','Balance':'余额','Admin':'管理员','Save failed':'保存失败','Reloading…':'重新载入中…','In':'存入','Out':'取出','days':'天','Active days':'活跃天数','Amount':'金额','Best day':'最佳日','Worst day':'最差日','Profitable days':'盈利天数','Upline cost':'成本','Profit after spending':'扣除非销售支出后利润','CS code':'客服代码','Win / lose':'输赢','Mon':'周一','Tue':'周二','Wed':'周三','Thu':'周四','Fri':'周五','Sat':'周六','Sun':'周日','Kept on device':'已存在这台电脑','Tap a day to open it':'点一天打开','Nothing new to save':'没有新的更改','Show only Not sale rows':'只显示非销售行','to the new sheet:':'到新表：','→ new Start':'→ 新的初始值','carries on (24-hour rule keeps counting)':'继续累计（24 小时规则）','next':'下一个','prev':'上一个'},
+try{const Z={'CS DATA':'顾客数据','+ Add bank':'+ 添加银行','+ Add game':'+ 添加游戏','Add TNG':'添加 TNG','Add point':'加分','Avg active days':'平均活跃天数','Back to sheet':'返回表格','Bank':'银行','Bank name':'银行名称','Banks':'银行','Banks this month':'本月银行','Bigger text':'放大文字','Calendar':'日历','Cancel':'取消','Clear sort':'清除排序','Click to sort':'点击排序','Close':'关闭','Colour':'颜色','Confirm':'确认','Copied':'已复制','Copied. Paste it into Google Sheet':'已复制，可贴到 Google Sheet','Copy':'复制','Copy CS code + total in for today':'复制今天的客服代码和总存入','Copy balances to a new month':'把余额复制到新月份','Copy blocked. Select cells and press Ctrl+C':'复制被阻止，请选中格子后按 Ctrl+C','Copy to new month':'复制到新月份','Cost':'成本','Daily Ledger':'每日账目','Daily net':'每日净额','Date':'日期','Day by day':'每日明细','Delete sheet':'删除日期表','Delete this sheet':'删除这张表','Delete this sheet?':'删除这张表？','Deposit':'存款','Download cancelled':'已取消下载','Edit names and start':'编辑名称和初始值','From':'来自','Game':'游戏','Game name':'游戏名称','Games':'游戏','Hide':'隐藏','In / Out':'进 / 出','Last TNG limit':'上次 TNG 额度','Last bank balance':'上次银行余额','Last game balance':'上次游戏余额','Limit':'额度','Monthly report':'月报表','Month':'月报表','Edit':'编辑','Name':'名称','Net':'净赚','New day':'新的一天','New month':'新月份','New sheet date':'新表日期','Next sheet':'下一张','Previous sheet':'上一张','No earlier sheet':'没有更早的表','No later sheet. Press New day to start one':'没有更后的表，按“新的一天”开新的','None (not TNG)':'不是 TNG','Not sale':'非销售','Not sale only':'只看非销售','Not sale spending':'非销售支出','Nothing new to save':'没有新的更改','Paid from which TNG?':'用哪个 TNG 付？','Players':'玩家','Points':'分数','Points and wallets':'分数和钱包','Profit':'利润','Pts used':'已用分数','Records are not copied.':'记录不会被复制。','Redo':'重做','Redo (Ctrl+Y)':'重做 (Ctrl+Y)','Remove':'删除','Reset':'重置','Running total':'累计','Save':'保存','Saved':'已保存','Saving…':'保存中…','Search code':'搜索代码','Search player / code / game':'搜索玩家 / 代码 / 游戏','Sheet':'表','Sign out':'退出登入','Smaller text':'缩小文字','Start':'初始','Start a new day?':'开始新的一天？','Text size':'文字大小','Time':'时间','Today':'今天',"Today's business":'今日业务','Total':'总计','Total in':'总存入','Total win / lose':'总输赢','Undo':'撤销','Undo (Ctrl+Z)':'撤销 (Ctrl+Z)','Unsaved changes are kept on this device until you press Save':'未保存的更改会留在这台电脑上，按保存才会存入','Upline':'上线','Upline rate %':'上线比例 %','Withdraw':'提款','Remark':'备注','Code':'代码','Transfer':'转账','(%) Bonus':'(%) 赠送','Balance':'余额','Admin':'管理员','Save failed':'保存失败','Reloading…':'重新载入中…','In':'存入','Out':'取出','days':'天','Active days':'活跃天数','Amount':'金额','Best day':'最佳日','Worst day':'最差日','Profitable days':'盈利天数','Upline cost':'成本','Profit after spending':'扣除非销售支出后利润','CS code':'客服代码','Win / lose':'输赢','Mon':'周一','Tue':'周二','Wed':'周三','Thu':'周四','Fri':'周五','Sat':'周六','Sun':'周日','Kept on device':'已存在这台电脑','Tap a day to open it':'点一天打开','Nothing new to save':'没有新的更改','Show only Not sale rows':'只显示非销售行','to the new sheet:':'到新表：','→ new Start':'→ 新的初始值','carries on (24-hour rule keeps counting)':'继续累计（24 小时规则）','next':'下一个','prev':'上一个'},
  R=[[/^(\d+) items$/,'$1 笔'],[/^(\d+) d ago$/,'$1 天前'],[/^([\d.,]+)% of deposits · (.+) a day on average · (\d+) days open$/,'占存款 $1% · 平均每天 $2 · 已开 $3 天'],[/^Net profit for (.+)$/,'$1 净利润'],[/^([\d.,]+) pts$/,'$1 分'],[/^In ([\d.,]+)$/,'进 $1'],[/^Out ([\d.,]+)$/,'出 $1'],[/^Last visit/,'最近出现']],
  P=[['Saved ','已保存 '],['Opening copied to ','初始值已复制到 '],['Pasted ','已粘贴 '],['Deleted sheet ','已删除日期表 '],['Deleted ','已删除 ']],AT=['placeholder','title','aria-label'];
  const on=()=>document.body.dataset.role==='admin',has=Object.prototype.hasOwnProperty;
@@ -1919,7 +1919,7 @@ if(window.__ROLE&&window.SB){
   setInterval(()=>{try{if(dirty&&!ed&&!document.hidden)save(true)}catch(e){}},5000);
 }
 
-W.focus();
+W.focus({preventScroll:true});
 if(window.__ROLE){art={publish:()=>syncDB()};status()}
 }
 </script>
@@ -2082,7 +2082,7 @@ function setup(id){const st={pg:0,sig:''};
   const rows=[...t.querySelectorAll('tbody tr')];let el=document.getElementById('pg-'+id);
   if(!el){el=document.createElement('div');el.id='pg-'+id;el.className='mv-pg2';t.parentNode.appendChild(el)}
   const real=rows.length&&!rows[0].querySelector('td.empty');
-  if(!mq.matches||!real||rows.length<=10){rows.forEach(r=>r.style.removeProperty('display'));el.hidden=true;return}
+  if(!real||rows.length<=10){rows.forEach(r=>r.style.removeProperty('display'));el.hidden=true;return}
   const s=rows.length+'|'+rows[0].textContent;if(s!==st.sig){st.sig=s;st.pg=0}
   const np=Math.ceil(rows.length/10);st.pg=Math.min(st.pg,np-1);
   rows.forEach((r,i)=>{if(i>=st.pg*10&&i<st.pg*10+10)r.style.removeProperty('display');else r.style.setProperty('display','none','important')});
@@ -2790,7 +2790,7 @@ html[data-neon="1"] #dtheme .sun{display:block}html[data-neon="1"] #dtheme .moon
 var K='ledger-theme';function get(){try{return localStorage.getItem(K)==='dark'}catch(e){return false}}
 function apply(on){document.documentElement.dataset.neon=on?'1':'0';document.querySelectorAll('style[data-neon]').forEach(function(s){s.media=on?'all':'not all'});var m=document.querySelector('meta[name=theme-color]');if(m)m.content=on?'#0F1618':m.dataset.l||m.content}
 window.__setTheme=function(on){apply(on);try{localStorage.setItem(K,on?'dark':'light')}catch(e){}};
-apply(get());
+apply(get());document.addEventListener('DOMContentLoaded',function(){apply(get())});window.addEventListener('load',function(){apply(get())});
 function add(){if(document.getElementById('dtheme'))return;var host,ref;
  var ph=matchMedia('(max-width:700px)').matches,o=document.getElementById('dout');if(ph){if(!o)return;host=o.parentNode;ref=o.nextSibling}
  else{var t=document.querySelector('#app .top #lgo');if(t){host=t.parentNode;ref=t}}
@@ -2825,5 +2825,137 @@ html body #app .hero .dnav #dprev,html body #app .hero .dnav #dnext{border:1px s
 html[data-neon="1"] body #app .hero .dnav #dprev,html[data-neon="1"] body #app .hero .dnav #dnext,html[data-neon="1"] body #app .hero .dnav #dout{border-color:rgba(176,184,188,.15)!important}
 }</style>
 <style id="dnav-tidy2">@media(max-width:350px){html body #app .hero .dnav{gap:4px!important}html body #app .hero .dnav #date{font-size:11.5px!important;padding:0 6px 0 8px!important}html body #app .hero .dnav #dout{padding:0 9px!important}html body #app .hero .dnav #dprev,html body #app .hero .dnav #dnext,html body #app .hero .dnav #dtheme{width:30px!important;min-width:30px!important}}</style>
+<style id="neon13" data-neon media="not all">
+html body #app #mview .m2-t tfoot tr,html body #app #mview #mv-days tfoot tr,html body #app #mview .m2-t tfoot td,html body #app #mview #mv-days tfoot td{background:#1D282C!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border-color:rgba(176,184,188,.15)!important}
+html body #app #mview .m2-t tfoot tr.aft,html body #app #mview .m2-t tfoot tr.aft td{background:rgba(207,250,72,.14)!important;color:#CFFA48!important;-webkit-text-fill-color:#CFFA48!important}
+html body #app #mview .m2-t tfoot td.neg,html body #app #mview .m2-t tfoot .neg{color:#ff6b6b!important;-webkit-text-fill-color:#ff6b6b!important}
+html body #app #mview .m2-t tfoot td.pos,html body #app #mview .m2-t tfoot .pos{color:#CFFA48!important;-webkit-text-fill-color:#CFFA48!important}
+html body #app #mview .m2-t tfoot td:first-child{color:#B0B8BC!important;-webkit-text-fill-color:#B0B8BC!important}
+</style>
+<style id="neon14" data-neon media="not all">
+html body #app #mview #m2-ex tfoot tr,html body #app #mview #m2-xg tfoot tr,html body #app #mview #m2-ex tfoot td,html body #app #mview #m2-xg tfoot td,html body #app #mview #m2-ex tfoot,html body #app #mview #m2-xg tfoot{background:#1D282C!important;background-image:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border-color:rgba(176,184,188,.15)!important;box-shadow:none!important}
+html body #app #mview #m2-ex tfoot tr.aft,html body #app #mview #m2-xg tfoot tr.aft,html body #app #mview #m2-ex tfoot tr.aft td,html body #app #mview #m2-xg tfoot tr.aft td{background:rgba(207,250,72,.14)!important;color:#CFFA48!important;-webkit-text-fill-color:#CFFA48!important}
+html body #app #mview #m2-ex tfoot td.neg,html body #app #mview #m2-xg tfoot td.neg{color:#ff6b6b!important;-webkit-text-fill-color:#ff6b6b!important}
+html body #app #mview #m2-ex tfoot tr:not(.aft) td:first-child,html body #app #mview #m2-xg tfoot tr:not(.aft) td:first-child{color:#B0B8BC!important;-webkit-text-fill-color:#B0B8BC!important}
+</style>
+<style id="neon15" data-neon media="not all">html body #app #mview #m2-ex tfoot td,html body #app #mview #m2-xg tfoot td{background:transparent!important}html body #app #mview #m2-ex tfoot tr.aft td,html body #app #mview #m2-xg tfoot tr.aft td{background:transparent!important}</style>
+<style id="neon16" data-neon media="not all">html body #app .pgr,html body #app [id^=pg-],html body #app [id^=mv-pg],html body #app [id=cs-pg],html body #app [class*=pg] span,html body #app [id*=pg] span{color:#B0B8BC!important;-webkit-text-fill-color:#B0B8BC!important}html body #app [id*=pg] button{background:#161F22!important;color:#fff!important;border:1px solid rgba(176,184,188,.15)!important;box-shadow:none!important}</style>
+<style id="neon17" data-neon media="not all">html body #app #mview #m2-ex tfoot tr.aft,html body #app #mview #m2-xg tfoot tr.aft,html body #app #mview #m2-ex tfoot tr.aft td,html body #app #mview #m2-xg tfoot tr.aft td{background:#1D282C!important;color:#fff!important;-webkit-text-fill-color:#fff!important;font-weight:800!important}html body #app #mview #m2-ex tfoot tr:not(.aft) td:first-child,html body #app #mview #m2-xg tfoot tr:not(.aft) td:first-child{color:#fff!important;-webkit-text-fill-color:#fff!important;font-weight:800!important}html body #app #mview #m2-ex tfoot tr.aft td.neg,html body #app #mview #m2-xg tfoot tr.aft td.neg,html body #app #mview #m2-ex tfoot tr.aft td:last-child{color:#ff6b6b!important;-webkit-text-fill-color:#ff6b6b!important}html body #app #mview #m2-ex tfoot tr+tr{border-top:1px solid rgba(176,184,188,.15)!important}html body #app #mview #m2-ex tfoot,html body #app #mview #m2-xg tfoot{border-radius:0 0 14px 14px!important;overflow:hidden}</style>
+<style id="neon18" data-neon media="not all">html body #app #mview #mv-days tfoot td,html body #app #mview #mv-days tfoot td b{color:#fff!important;-webkit-text-fill-color:#fff!important;font-weight:800!important}html body #app #mview #mv-days tfoot td.pos:last-child,html body #app #mview #mv-days tfoot td.pos:last-child b{color:#CFFA48!important;-webkit-text-fill-color:#CFFA48!important}html body #app #mview #mv-days tfoot td.neg:last-child,html body #app #mview #mv-days tfoot td.neg:last-child b{color:#ff6b6b!important;-webkit-text-fill-color:#ff6b6b!important}</style>
+<style id="dlg-clean">#nd-p:empty{display:none!important}#cmask .dlg p{margin-bottom:12px}</style>
+<style id="sel-deep">html body #app #t td.in{background-image:none!important;box-shadow:inset 0 0 0 9999px rgba(2,106,184,.34)!important}html body #app #t td.in.act,html body #app #t td.act{box-shadow:inset 0 0 0 2px #0369a1,inset 0 0 0 9999px rgba(2,106,184,.2)!important}html body #app #t td.in:first-child{color:#0c4a6e!important;font-weight:800}</style>
+<style id="sel-deep-dark" data-neon media="not all">html body #app #t td.in{box-shadow:inset 0 0 0 9999px rgba(207,250,72,.24)!important}html body #app #t td.in.act,html body #app #t td.act{box-shadow:inset 0 0 0 2px #CFFA48,inset 0 0 0 9999px rgba(207,250,72,.14)!important}html body #app #t td.in:first-child{color:#CFFA48!important}</style>
+<style id="lock-phone">@media(max-width:700px){
+html,body{height:100%;overflow:hidden!important}
+html body #app{height:100vh!important;height:100dvh!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+html body #app>.hero{flex:none!important;position:relative!important;top:auto!important;z-index:30}
+html body #app>.main{flex:1 1 auto!important;min-height:0!important;display:flex!important;flex-direction:column!important}
+html body #app>.main>.bar{flex:none!important}
+html body #app>.main>#wrap{flex:1 1 auto!important;min-height:0!important;height:auto!important;max-height:none!important;overflow:scroll!important}
+html body #app>.main>#tabs{flex:none!important;position:relative!important;bottom:auto!important}
+html body #app #wrap::-webkit-scrollbar{width:10px;height:10px;display:block!important;-webkit-appearance:none}
+html body #app #wrap::-webkit-scrollbar-track{background:#dcecf8;border-radius:6px}
+html body #app #wrap::-webkit-scrollbar-thumb{background:#6aa9d6;border-radius:6px;border:2px solid #dcecf8}
+html body #app #wrap::-webkit-scrollbar-corner{background:#dcecf8}
+}</style>
+<style id="lock-phone-dark" data-neon media="not all">@media(max-width:700px){html body #app #wrap::-webkit-scrollbar-track,html body #app #wrap::-webkit-scrollbar-corner{background:#1D282C}html body #app #wrap::-webkit-scrollbar-thumb{background:#CFFA48;border-color:#1D282C}}</style>
+<style id="biz-small">html body #biz .bz-btn{height:24px!important;padding:0 11px 0 8px!important;font-size:9.5px!important;letter-spacing:.06em!important;gap:4px!important}html body #biz .bz-btn svg{width:11px!important;height:11px!important}html body #biz .bz-btn::before{left:8px!important;right:8px!important}html body #biz .bz-st{transform-origin:center;width:6px!important;height:6px!important}html body #biz .bz-panel{bottom:34px!important}html body #biz{left:10px!important}</style>
+<style id="gap-tight">@media(max-width:700px){html body #app>.main{margin:0!important;padding:6px 4px 0!important;width:100%!important;max-width:none!important;box-sizing:border-box!important}html body #app>.main>#wrap{border-radius:10px!important}}</style>
+<style id="cell-center">html body #app #t tbody td:nth-child(3),html body #app #t tbody td:nth-child(4),html body #app #t tbody td:nth-child(5){text-align:center!important}html body #app #t tbody td:nth-child(3) input,html body #app #t tbody td:nth-child(4) input,html body #app #t tbody td:nth-child(5) input{text-align:center!important}html body #app #t tbody td:nth-child(5){padding-left:18px!important;padding-right:18px!important}html body #app #t tbody td:nth-child(5)>*{margin-left:auto;margin-right:auto}</style>
+<style id="kpi-swap">@media(min-width:701px){
+html body #app .tot.kpi>section.kb{order:0}
+html body #app .tot.kpi .kg>div,html body #app .tot.kpi>section>div{order:7}
+html body #app .tot.kpi .kg>div:has(#w-net){order:1}
+html body #app .tot.kpi .kg>div:has(#w-io){order:2}
+html body #app .tot.kpi .kg>div:has(#w-dep){order:3}
+html body #app .tot.kpi .kg>div:has(#w-wd){order:4}
+html body #app .tot.kpi .kg>div:has(#uc-all){order:5}
+html body #app .tot.kpi .kg>div:has(#w-pl){order:6}
+}</style>
+<style id="kpi-swap-lines">@media(min-width:701px){html body #app .tot.kpi .kg>div:has(#w-net){border-right:1px solid rgba(255,255,255,.314)!important}html body #app .tot.kpi .kg>div:has(#w-pl){border-right:0!important}}</style>
+<style id="promo-toggle-css">
+body.promo-off .pc,body.promo-off #t .pc{display:none!important}
+#ptog{display:inline-flex;align-items:center;gap:7px;cursor:pointer;white-space:nowrap}
+#ptog .sw{position:relative;width:28px;height:16px;border-radius:999px;background:#b8c7d6;transition:background .2s;flex:none}
+#ptog .sw::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #0003;transition:transform .2s}
+#ptog.on .sw{background:#0284c7}#ptog.on .sw::after{transform:translateX(12px)}
+html[data-neon="1"] #ptog.on .sw{background:#CFFA48}
+html[data-neon="1"] #ptog.on .sw::after{background:#0F1618}
+</style>
+<script>(function(){var K='ledger-promo';function on(){try{return localStorage.getItem(K)!=='off'}catch(e){return true}}
+function apply(v){document.body.classList.toggle('promo-off',!v&&!matchMedia('(max-width:700px)').matches);var b=document.getElementById('ptog');if(b){b.classList.toggle('on',v);b.setAttribute('aria-pressed',v)}}
+function add(){if(document.getElementById('ptog'))return;var ph=matchMedia('(max-width:700px)').matches,bar,ref;if(ph)return;bar=document.querySelector('#app .main>.bar');ref=document.getElementById('rbt');if(!bar||!ref)return
+ var cs=document.body.dataset.role==='cs';var b=document.createElement('button');b.id='ptog';b.type='button';b.className='btn';b.title=cs?'Show / hide promo progress (1/3)':'显示 / 隐藏 优惠进度 (1/3)';
+ b.innerHTML='<span class="sw"></span><span>'+(ph?'1/3':(cs?'Promo 1/3':'优惠 1/3'))+'</span>';
+ b.addEventListener('click',function(){var v=!on();try{localStorage.setItem(K,v?'on':'off')}catch(e){}apply(v)});bar.insertBefore(b,ref);apply(on())}
+function start(){apply(on());var n=0,iv=setInterval(function(){add();if(document.getElementById('ptog')||++n>80)clearInterval(iv)},250);new MutationObserver(function(){if(!document.getElementById('ptog'))add();else{var cs=document.body.dataset.role==='cs',s=document.querySelector('#ptog span:last-child');if(s){var t=matchMedia('(max-width:700px)').matches?'1/3':(cs?'Promo 1/3':'优惠 1/3');if(s.textContent!==t)s.textContent=t}}}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['data-role']})}
+if(document.body)start();else document.addEventListener('DOMContentLoaded',start)})();</script>
+<style id="neon19" data-neon media="not all">@media(min-width:701px){
+html body #app .tot.kpi.kpi.kpi,html body #app .tot.kpi{background:#161F22!important;border:1px solid rgba(176,184,188,.15)!important;border-radius:16px!important;box-shadow:none!important}
+html body #app .tot.kpi .kp,html body #app .tot.kpi section.kb,html body #app .tot.kpi.kpi.kpi .kg>div,html body #app .tot.kpi .kg>div{background:transparent!important;border:0!important;border-right:0!important;border-radius:0!important;box-shadow:none!important;outline:0!important}
+html body #app .tot.kpi .kg>div::after,html body #app .tot.kpi.kpi.kpi .kg>div::after{display:none!important}
+html body #app .tot.kpi .kg>div:is(:has(#w-net),:has(#w-io),:has(#w-dep),:has(#uc-all),:has(#pu-all),:has(#g-all)){border-right:1px solid rgba(176,184,188,.22)!important}
+html body #app .tot.kpi .kg>div:is(:has(#w-net),:has(#w-io),:has(#w-dep),:has(#uc-all),:has(#pu-all),:has(#g-all)):is(:hover,:not(:hover)){border-right:1px solid rgba(176,184,188,.22)!important}
+html body #app #tng .tw .tp{background:rgba(255,255,255,.06)!important;border:0!important}
+}
+html body #app #tng .tw .tp{background:rgba(255,255,255,.06)!important;border:0!important}
+</style>
+<style id="neon20" data-neon media="not all">@media(min-width:701px){
+html body #app .tot.kpi.kpi.kpi .kg>div:is(:has(#w-net),:has(#w-dep),:has(#w-wd),:has(#uc-all),:has(#w-pl),:has(#w-io),:has(#pu-all),:has(#g-all)){background:transparent!important;border:0!important;border-right:0!important;box-shadow:none!important}
+html body #app .tot.kpi.kpi.kpi .kg>div:is(:has(#w-net),:has(#w-io),:has(#w-dep),:has(#uc-all),:has(#pu-all),:has(#g-all)){border-right:1px solid rgba(176,184,188,.22)!important}
+}</style>
+<style id="top-fit">@media(min-width:701px){html body #app .top{gap:6px!important}html body #app .top .btn{padding-left:10px!important;padding-right:10px!important}}</style>
+<style id="top-fit2">@media(min-width:701px) and (max-width:1320px){html body #app .top .who{display:none!important}html body #app .top .st{font-size:11px!important}}</style>
+<style id="tabs-mouse">@media(min-width:701px){html body #app .tabs{scrollbar-width:thin!important;scrollbar-color:#7fb4da transparent;cursor:grab}html body #app .tabs::-webkit-scrollbar{display:block!important;height:6px!important}html body #app .tabs::-webkit-scrollbar-thumb{background:#7fb4da;border-radius:6px}html body #app .tabs.drag{cursor:grabbing;user-select:none}html body #app .tabs.drag *{pointer-events:none}}
+html[data-neon="1"] body #app .tabs{scrollbar-color:#CFFA48 transparent}html[data-neon="1"] body #app .tabs::-webkit-scrollbar-thumb{background:#CFFA48}</style>
+<script>(function(){function bind(){var tb=document.getElementById('tabs');if(!tb){return setTimeout(bind,300)}if(tb.__ms)return;tb.__ms=1;
+tb.addEventListener('wheel',function(e){if(Math.abs(e.deltaX)>Math.abs(e.deltaY))return;if(tb.scrollWidth<=tb.clientWidth)return;e.preventDefault();tb.scrollLeft+=e.deltaY+e.deltaX},{passive:false});
+var down=false,sx=0,sl=0,moved=false;
+tb.addEventListener('mousedown',function(e){if(e.button!==0)return;down=true;moved=false;sx=e.clientX;sl=tb.scrollLeft});
+window.addEventListener('mousemove',function(e){if(!down)return;var dx=e.clientX-sx;if(!moved&&Math.abs(dx)>5){moved=true;tb.classList.add('drag')}if(moved){tb.scrollLeft=sl-dx;e.preventDefault()}});
+window.addEventListener('mouseup',function(){if(!down)return;down=false;if(moved){setTimeout(function(){tb.classList.remove('drag')},0)}});
+tb.addEventListener('click',function(e){if(moved){e.stopPropagation();e.preventDefault();moved=false}},true)}
+bind()})();</script>
+<style id="cs-no-data">body[data-role=cs] #tb-cs,body[data-role=cs] #csv2{display:none!important}</style>
+<style id="mv-tabs-desk">@media(min-width:701px){
+html body .mview{bottom:var(--tbh,52px)!important}
+html body #app .tabs{position:relative!important;z-index:45!important}
+html body #app .tabs #tb-mv{flex:none!important}
+html body #app .tabs #tb-mv.on{background:#0369a1!important;color:#fff!important;border-color:#0369a1!important}
+}</style>
+<script id="mv-tabs-desk-js">(function(){try{
+const mq=matchMedia('(min-width:701px)');
+const $=id=>document.getElementById(id);
+function ins(){const tb=$('tabs');if(!tb||!mq.matches)return;
+ if(document.body.dataset.role==='cs'&&false)return;
+ let b=$('tb-mv');
+ if(!b){b=document.createElement('button');b.id='tb-mv';b.className='tb cs';b.textContent='Month';b.onclick=()=>{const m=$('mview');if(m&&m.hidden)$('mvb').click()}}
+ if(b.parentNode!==tb||tb.lastElementChild!==b)tb.appendChild(b);
+ const h=tb.getBoundingClientRect().height;if(h)document.documentElement.style.setProperty('--tbh',Math.ceil(window.innerHeight-tb.getBoundingClientRect().top)+'px');
+ sync()}
+function sync(){const b=$('tb-mv'),m=$('mview');if(b&&m)b.classList.toggle('on',!m.hidden&&mq.matches)}
+document.addEventListener('click',e=>{if(!mq.matches)return;const t=e.target.closest('#tabs button'),m=$('mview');
+ if(t&&m&&!m.hidden&&t.id!=='tb-mv'){m.hidden=true;document.body.style.overflow=''}
+ setTimeout(sync,30);setTimeout(sync,300)},true);
+const go=()=>{const tb=$('tabs');if(!tb||!$('mview')){setTimeout(go,300);return}
+ new MutationObserver(ins).observe(tb,{childList:true});
+ new MutationObserver(sync).observe($('mview'),{attributes:true,attributeFilter:['hidden']});
+ addEventListener('resize',ins);ins()};
+go();
+}catch(e){}})();</script>
+<style id="games-up">@media(min-width:901px){
+html body #mview .m2-main{grid-template-rows:auto auto!important;align-items:start!important;grid-auto-flow:row!important}
+html body #mview .m2-main>.m2-l{grid-column:1!important;grid-row:1!important}
+html body #mview .m2-main>#m2-ncard{grid-column:2!important;grid-row:1!important}
+html body #mview .m2-main>#m2-xcard{grid-column:2!important;grid-row:2!important}
+html body #mview .m2-main>.m2-card:not(.m2-l):not(#m2-ncard):not(#m2-xcard){grid-column:1!important;grid-row:2!important}
+}</style>
+<style id="no-aft">html body #app #mview #m2-ex tfoot tr.aft{display:none!important}</style>
+<style id="mv-noclick">html body #app #mview [data-open],html body #mview [data-open],html body #mview .m2-cal *{pointer-events:none!important;cursor:default!important}
+html body #mview .m2-card h3 small:not(#m2-xt):not(#m2-xs):not(#m2-gt){display:none!important}
+html body #mview #mv-days tbody tr:hover td{background:transparent!important}</style>
+<script id="mv-noclick-js">document.addEventListener('click',e=>{const m=document.getElementById('mview');if(m&&m.contains(e.target)&&e.target.closest('[data-open],[data-day]')){e.stopPropagation();e.preventDefault()}},true);</script>
+<style id="mv-off-day">html:has(#mview:not([hidden])) body #app .tabs .tb.on:not(#tb-mv){background:#fff!important;color:#5b6b82!important;border:1px solid #d3e3f3!important;box-shadow:0 2px 6px -3px rgba(3,105,161,.3)!important;text-shadow:none!important}
+html[data-neon="1"]:has(#mview:not([hidden])) body #app .tabs .tb.on:not(#tb-mv){background:#161F22!important;color:#B0B8BC!important;border:1px solid rgba(176,184,188,.15)!important;box-shadow:none!important}</style>
 </body>
 </html>
