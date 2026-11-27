@@ -2957,5 +2957,7 @@ html body #mview #mv-days tbody tr:hover td{background:transparent!important}</s
 <script id="mv-noclick-js">document.addEventListener('click',e=>{const m=document.getElementById('mview');if(m&&m.contains(e.target)&&e.target.closest('[data-open],[data-day]')){e.stopPropagation();e.preventDefault()}},true);</script>
 <style id="mv-off-day">html:has(#mview:not([hidden])) body #app .tabs .tb.on:not(#tb-mv){background:#fff!important;color:#5b6b82!important;border:1px solid #d3e3f3!important;box-shadow:0 2px 6px -3px rgba(3,105,161,.3)!important;text-shadow:none!important}
 html[data-neon="1"]:has(#mview:not([hidden])) body #app .tabs .tb.on:not(#tb-mv){background:#161F22!important;color:#B0B8BC!important;border:1px solid rgba(176,184,188,.15)!important;box-shadow:none!important}</style>
+<style id="vh-fix">@media(max-width:700px){html body #app{height:var(--appH,100dvh)!important;max-height:var(--appH,100dvh)!important}html,body{height:var(--appH,100%)!important}}</style>
+<script id="vh-fix-js">(function(){try{const r=document.documentElement;const f=()=>{const h=Math.round(Math.min(window.innerHeight||9999,(window.visualViewport&&window.visualViewport.height)||9999));if(h>200&&h<9999)r.style.setProperty('--appH',h+'px')};f();addEventListener('resize',f);addEventListener('orientationchange',()=>setTimeout(f,200));if(window.visualViewport)window.visualViewport.addEventListener('resize',f);addEventListener('pageshow',f);addEventListener('load',f);setTimeout(f,500);setTimeout(f,1500)}catch(e){}})();</script>
 </body>
 </html>
