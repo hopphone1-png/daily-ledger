@@ -1468,7 +1468,7 @@ function promoChip(row){const p=PM.get(row);if(!p)return '';
 function cellHTML(row,c,vi,ci){const col=COLS[c],v=row[col.k];let inner=esc(fmt(v)),cls=[];
   if(col.c)cls.push('bk');if(col.num){cls.push('n');if(v!==''&&v!=null&&typeof v!=='number')cls.push('bad');else if(typeof v==='number')cls.push(v<0?'neg':'pos')}if(col.k==='transfer'||col.k==='bonus')cls.push('xt');if(col.k==='type'&&v)cls.push('gm');if(col.k==='remark'&&tngIn(v))cls.push('tn');
   if(col.k==='code'&&v)inner=esc(cd(v));
-  if(col.k==='bonus'&&typeof v==='number')inner=esc(fmt(v))+'%';
+  if(col.k==='bonus'){if(typeof v==='number')inner=esc(fmt(v))+'%';else if(v===''||v==null){inner='0%';cls.push('dflt')}}
   if(col.k==='remark'&&v){const t=tngIn(v);if(t){const rest=String(v).replace(new RegExp('\\b('+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'|tng)\\b','gi'),'').trim();inner=`<span class="tp"><i>TNG</i>${esc(t.toUpperCase())}</span>${rest?' <small class="tr">'+esc(rest)+'</small>':''}`}}
   if(col.k==='remark'){inner+=promoChip(row)}
   if(col.sel){inner=v===NS?'<span class="nsp">Not sale</span>':v?esc(v):'';inner+=`<svg class="dd" data-dd viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>`}
@@ -3016,5 +3016,6 @@ addEventListener('popstate',()=>{
 html[data-neon="1"] body #app #t tbody tr.ns td.rh{box-shadow:inset 3px 0 0 #2ecc71!important;color:#2ecc71!important;background:rgba(31,157,85,.22)!important}
 html[data-neon="1"] body #app #t tbody tr.ns td.neg,html[data-neon="1"] body #app #t tbody tr.ns td.pos{color:#8fe6b4!important;font-weight:700}
 html[data-neon="1"] body #app #t tbody tr.ns td.xt,html[data-neon="1"] body #app #t tbody tr.ns:nth-child(even) td.xt{background:rgba(31,157,85,.22)!important}</style>
+<style id="bonus-dflt">html body #app #t td.dflt{color:#a3b1c4!important;font-weight:500!important}html[data-neon="1"] body #app #t td.dflt{color:#5d696e!important}</style>
 </body>
 </html>
