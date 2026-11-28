@@ -1724,7 +1724,7 @@ $('#ap-yes').onclick=()=>{const g=$('#ap-g').value,p=parse({num:1},$('#ap-p').va
   const d=new Date();S.rate=r;S.adds.push({g,p,r,c:Math.round(p*r)/100,t:String(d.getHours()).padStart(2,'0')+'.'+String(d.getMinutes()).padStart(2,'0')});
   touch();summary();$('#ap-p').value='';apDraw();$('#ap-p').focus();toast('+'+money(p)+' pts to '+g)};
 function renderTabs(){const el=$('#tabs');if(!el)return;const L=[...new Set([...Object.keys(S.days).filter(k=>(S.days[k].rows||[]).length||S.days[k].keep||(S.days[k].adds||[]).length),S.date])].filter(Boolean).sort();
-  el.innerHTML='<button class="tb cs'+(csOn?' on':'')+'" id="tb-cs">CS DATA</button><span class="tsep"></span><button class="tb-add" id="tb-add" title="New day" aria-label="New day">+</button>'+L.map(d=>`<button class="tb${d===S.date&&!csOn?' on':''}" data-day="${esc(d)}" title="${esc(d)}">${esc(d.slice(5))}</button>`).join('');
+  el.innerHTML='<button class="tb cs'+(csOn?' on':'')+'" id="tb-cs">CS DATA</button><span class="tsep"></span><button class="tb-add" id="tb-add" title="New day" aria-label="New day">+</button>'+L.map(d=>`<button class="tb${d===S.date&&!csOn?' on':''}${d.slice(0,7)!==String(S.date).slice(0,7)?' oth':''}" data-day="${esc(d)}" title="${esc(d)}">${esc(d.slice(5))}</button>`).join('');
   const ctr=()=>{const on=el.querySelector('.tb.on');if(!on)return;const er=el.getBoundingClientRect(),or=on.getBoundingClientRect();const l=el.scrollLeft+(or.left-er.left)-el.clientWidth/2+or.width/2;el.scrollLeft=l};ctr()}
 $('#tabs').addEventListener('click',e=>{if(e.target.id==='tb-cs'){openCS();return}const t=e.target.closest('[data-day]');if(t){closeCS();switchDay(t.dataset.day);return}if(e.target.id==='tb-add')$('#nd').click()});
 const ML={"bd":"Best day","wdy":"Worst day","win":"Profitable days","dz":"days","pf":"Profit","items":"items","time":"Time","note":"Remark","bank":"Bank","amt":"Amount","after":"Profit after spending","noex":"No Not sale spending this month.","net": "Net profit", "dep": "Deposit", "wd": "Withdraw", "uc": "Upline cost", "pl": "Players", "io": "In / Out", "of": "of deposits", "avg": "a day on average", "days": "days open", "nodata": "No records this month yet.", "wk": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], "date": "Date", "total": "Total", "in": "In", "out": "Out", "pts": "pts", "share": "of points", "mon": "Net profit for", "cum": "Running total", "tdn": "Daily net"};
@@ -3323,5 +3323,7 @@ html:not([data-neon="1"]) body #biz .bz-spark{background:radial-gradient(circle,
 html:not([data-neon="1"]) body #biz .bz-item .ic{background:linear-gradient(160deg,#c01818,#6e0000)!important}
 html:not([data-neon="1"]) body #biz .bz-item .ic svg{stroke:#ffd9d9!important}
 </style>
+<script id="admin-home-list">document.addEventListener('click',function(e){if(window.__ROLE!=='admin')return;var t=e.target.closest&&e.target.closest('#tb-home');if(!t||!window.__showCsList)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();window.__showCsList()},true);</script>
+<style id="tabs-month-only">#tabs .tb.oth{display:none!important}</style>
 </body>
 </html>
